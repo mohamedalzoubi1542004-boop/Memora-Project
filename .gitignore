@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+*.db
+uploads/
+reports/
+app/ai_model/model.h5
+app/ai_model/temperature_T.json
+.pytest_cache/

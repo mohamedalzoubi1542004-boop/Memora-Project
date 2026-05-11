@@ -1,0 +1,30 @@
+{
+  "male": [
+    {"seed": "ahmed2024", "name": "أحمد"},
+    {"seed": "khaled2024", "name": "خالد"},
+    {"seed": "omar2024", "name": "عمر"},
+    {"seed": "salem2024", "name": "سالم"},
+    {"seed": "nasser2024", "name": "ناصر"},
+    {"seed": "fares2024", "name": "فارس"},
+    {"seed": "zaid2024", "name": "زيد"},
+    {"seed": "wajdi2024", "name": "وجدي"},
+    {"seed": "tarek2024", "name": "طارق"},
+    {"seed": "bilal2024", "name": "بلال"},
+    {"seed": "nader2024", "name": "نادر"},
+    {"seed": "mazen2024", "name": "مازن"}
+  ],
+  "female": [
+    {"seed": "fatima2024", "name": "فاطمة"},
+    {"seed": "sara2024", "name": "سارة"},
+    {"seed": "noor2024", "name": "نور"},
+    {"seed": "lana2024", "name": "لانا"},
+    {"seed": "rana2024", "name": "رنا"},
+    {"seed": "dana2024", "name": "دانا"},
+    {"seed": "yara2024", "name": "يارا"},
+    {"seed": "hana2024", "name": "هناء"},
+    {"seed": "rima2024", "name": "ريما"},
+    {"seed": "abeer2024", "name": "عبير"},
+    {"seed": "suha2024", "name": "سهى"},
+    {"seed": "mona2024", "name": "منى"}
+  ]
+}

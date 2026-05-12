@@ -1,0 +1,26 @@
+Could not find platform independent libraries <prefix>
+INFO:     Will watch for changes in these directories: ['C:\\Users\\moham\\memora-backend\\Back-end']
+INFO:     Uvicorn running on http://0.0.0.0:8002 (Press CTRL+C to quit)
+INFO:     Started reloader process [11228] using WatchFiles
+Could not find platform independent libraries <prefix>
+INFO:     Started server process [28984]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'app\main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [28984]
+Could not find platform independent libraries <prefix>
+INFO:     Started server process [7352]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'app\routers\auth.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [7352]
+Could not find platform independent libraries <prefix>
+INFO:     Started server process [30680]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.

@@ -1,0 +1,316 @@
+[AI] Model file not found at C:\Users\moham\memora-backend\Back-end\app\ai_model\model.h5 — running in demo mode.
+INFO:     127.0.0.1:50431 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50433 - "POST /auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50435 - "GET /auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50437 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50439 - "POST /auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50441 - "PUT /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "POST /auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51196 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51196 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "POST /auth/login HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /doctors HTTP/1.1" 307 Temporary Redirect
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /doctors HTTP/1.1" 307 Temporary Redirect
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55933 - "OPTIONS /doctors/ HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:55933 - "OPTIONS /doctors/ HTTP/1.1" 400 Bad Request
+INFO:     ::1:0 - "GET /messages/conversations HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /messages/conversations HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "POST /auth/login HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/users HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/doctors/pending HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/doctors HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/stats HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/users HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/doctors HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/doctors/pending HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/stats HTTP/1.1" 200 OK
+INFO:     ::1:0 - "POST /auth/login HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /mmse/patient/2 HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /mmse/patient/2 HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /symptoms/patient/2 HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /symptoms/patient/2 HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /doctors HTTP/1.1" 307 Temporary Redirect
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /doctors HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:54331 - "OPTIONS /doctors/ HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:54331 - "OPTIONS /doctors/ HTTP/1.1" 400 Bad Request
+INFO:     ::1:0 - "GET /messages/conversations HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /messages/conversations HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /messages/conversations HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /messages/conversations HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /messages/conversations HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /messages/conversations HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "POST /auth/login HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/stats HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/users HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/doctors HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/doctors/pending HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/users HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/stats HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/doctors HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/doctors/pending HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /messages/conversations HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /messages/conversations HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/doctors HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/doctors/pending HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/users HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/stats HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/users HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/doctors/pending HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/doctors HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /admin/stats HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55781 - "GET /docs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55787 - "POST /auth/register HTTP/1.1" 201 Created
+INFO:     127.0.0.1:55789 - "POST /auth/register HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:55791 - "POST /auth/register HTTP/1.1" 201 Created
+INFO:     127.0.0.1:49767 - "POST /auth/register-doctor HTTP/1.1" 201 Created
+INFO:     ::1:0 - "POST /auth/login HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /messages/conversations HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /messages/conversations HTTP/1.1" 200 OK
+INFO:     ::1:0 - "POST /auth/login HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients HTTP/1.1" 307 Temporary Redirect
+INFO:     ::1:0 - "GET /patients HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:55825 - "OPTIONS /patients/ HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:55825 - "OPTIONS /patients/ HTTP/1.1" 400 Bad Request
+INFO:     ::1:0 - "GET /patients HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:55825 - "OPTIONS /patients/ HTTP/1.1" 400 Bad Request
+INFO:     ::1:0 - "GET /patients HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:55825 - "OPTIONS /patients/ HTTP/1.1" 400 Bad Request
+INFO:     ::1:0 - "GET /patients HTTP/1.1" 307 Temporary Redirect
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients HTTP/1.1" 307 Temporary Redirect
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56279 - "OPTIONS /patients/ HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:56279 - "OPTIONS /patients/ HTTP/1.1" 400 Bad Request
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /reports/list HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /patients HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:50356 - "OPTIONS /patients/ HTTP/1.1" 400 Bad Request
+INFO:     ::1:0 - "GET /reports/list HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /patients HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:50356 - "OPTIONS /patients/ HTTP/1.1" 400 Bad Request
+INFO:     ::1:0 - "GET /messages/conversations HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /messages/conversations HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /doctors/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /doctors/me HTTP/1.1" 200 OK
+ [AI] Model file not found at C:\Users\moham\memora-backend\Back-end\app\ai_model\model.h5 — running in demo mode.
+INFO:     127.0.0.1:50979 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50979 - "GET / HTTP/1.1" 200 OK
+INFO:     ::1:0 - "POST /auth/login HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /doctors HTTP/1.1" 307 Temporary Redirect
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /doctors HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:60860 - "OPTIONS /doctors/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60860 - "OPTIONS /doctors/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60860 - "GET /doctors/ HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:60860 - "GET /doctors/ HTTP/1.1" 401 Unauthorized
+INFO:     ::1:0 - "POST /auth/login HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /doctors HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:53186 - "GET /doctors/ HTTP/1.1" 401 Unauthorized
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /doctors HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:53186 - "GET /doctors/ HTTP/1.1" 401 Unauthorized
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "POST /auth/login HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /messages/conversations HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /messages/conversations HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/history HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/history HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/history HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/history HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /doctors HTTP/1.1" 307 Temporary Redirect
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58340 - "GET /doctors/ HTTP/1.1" 401 Unauthorized
+INFO:     ::1:0 - "GET /doctors HTTP/1.1" 307 Temporary Redirect
+INFO:     127.0.0.1:58340 - "GET /doctors/ HTTP/1.1" 401 Unauthorized
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+ INFO:     ::1:0 - "POST /auth/login HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+[AI] Model file not found at C:\Users\moham\memora-backend\Back-end\app\ai_model\model.h5 — running in demo mode.
+INFO:     ::1:0 - "GET /doctors HTTP/1.1" 307 Temporary Redirect
+INFO:     ::1:0 - "GET /doctors HTTP/1.1" 307 Temporary Redirect
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55733 - "GET /doctors/ HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:55733 - "GET /doctors/ HTTP/1.1" 401 Unauthorized
+INFO:     ::1:0 - "POST /auth/login HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /patients/me HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /checkin/today HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /mmse/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /symptoms/patient/2/latest HTTP/1.1" 404 Not Found
+INFO:     ::1:0 - "GET /doctors HTTP/1.1" 307 Temporary Redirect
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     ::1:0 - "GET /doctors HTTP/1.1" 307 Temporary Redirect
+INFO:     ::1:0 - "GET /appointments/my HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65033 - "GET /doctors/ HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:65033 - "GET /doctors/ HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:49892 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59633 - "POST /auth/login HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:65276 - "POST /auth/login HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:65278 - "POST /auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65280 - "GET /appointments/my HTTP/1.1" 200 OK

@@ -14,26 +14,11 @@ Back-end/__pycache__/
 Back-end/**/__pycache__/
 Back-end/**/*.pyc
 Back-end/**/*.pyo
-Back-end/.env
-Back-end/*.db
-Back-end/uploads/
-Back-end/reports/
-Back-end/app/ai_model/model.h5
-Back-end/app/ai_model/temperature_T.json
 Back-end/.pytest_cache/
-Back-end/cd
-Back-end/py
-Back-end/uvicorn
 
 # ── Node / Next.js (Front-end) ───────────────────────────────────────────────
 Front-end/node_modules/
 Front-end/.next/
-Front-end/.env
-Front-end/.env.local
-Front-end/npm
-
-# ── Log files ─────────────────────────────────────────────────────────────────
-*.log
 
 # ── OS / editor ───────────────────────────────────────────────────────────────
 .DS_Store

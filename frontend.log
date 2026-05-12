@@ -1,0 +1,22 @@
+
+> memora-4@0.1.0 dev
+> next dev
+
+ ⚠ Port 3000 is in use, trying 3001 instead.
+ ⚠ Port 3001 is in use, trying 3002 instead.
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3002
+
+ ✓ Starting...
+ ✓ Ready in 6.8s
+ ✓ Compiled /middleware in 462ms (72 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 11s (1409 modules)
+ GET / 200 in 11772ms
+ ✓ Compiled in 818ms (705 modules)
+ ⚠ Found a change in next.config.mjs. Restarting the server to apply the changes...
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3000
+
+ ✓ Starting...
+ ✓ Ready in 5.3s

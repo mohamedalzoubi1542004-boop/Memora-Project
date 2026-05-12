@@ -1,0 +1,8 @@
+Could not find platform independent libraries <prefix>
+INFO:     Will watch for changes in these directories: ['C:\\Users\\moham\\memora-backend\\Back-end']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [21276] using WatchFiles
+Could not find platform independent libraries <prefix>
+INFO:     Started server process [3824]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.

@@ -1,0 +1,115 @@
+ ⚠ Port 3000 is in use, trying 3001 instead.
+ ⚠ Port 3001 is in use, trying 3002 instead.
+(node:13964) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../typescript/lib/typescript' in c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build for build dependencies doesn't lead to expected result 'C:\Users\moham\memora-backend\Front-end\node_modules\typescript\lib\typescript.js', but to 'c:\Users\moham\memora-backend\Front-end\node_modules\typescript\lib\typescript.js' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../typescript/lib/typescript (expected C:\Users\moham\memora-backend\Front-end\node_modules\typescript\lib\typescript.js)
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\load-jsconfig.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\load-jsconfig.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack-config.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack-config.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\handle-externals.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\handle-externals.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at resolve commonjs c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../typescript/lib/typescript' in c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build for build dependencies doesn't lead to expected result 'C:\Users\moham\memora-backend\Front-end\node_modules\typescript\lib\typescript.js', but to 'c:\Users\moham\memora-backend\Front-end\node_modules\typescript\lib\typescript.js' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../typescript/lib/typescript (expected C:\Users\moham\memora-backend\Front-end\node_modules\typescript\lib\typescript.js)
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\load-jsconfig.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\load-jsconfig.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack-config.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack-config.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\handle-externals.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\handle-externals.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at resolve commonjs c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../typescript/lib/typescript' in c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build for build dependencies doesn't lead to expected result 'C:\Users\moham\memora-backend\Front-end\node_modules\typescript\lib\typescript.js', but to 'c:\Users\moham\memora-backend\Front-end\node_modules\typescript\lib\typescript.js' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../typescript/lib/typescript (expected C:\Users\moham\memora-backend\Front-end\node_modules\typescript\lib\typescript.js)
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\load-jsconfig.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\load-jsconfig.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack-config.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack-config.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at resolve commonjs c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../typescript/lib/typescript' in c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build for build dependencies doesn't lead to expected result 'C:\Users\moham\memora-backend\Front-end\node_modules\typescript\lib\typescript.js', but to 'c:\Users\moham\memora-backend\Front-end\node_modules\typescript\lib\typescript.js' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../typescript/lib/typescript (expected C:\Users\moham\memora-backend\Front-end\node_modules\typescript\lib\typescript.js)
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\load-jsconfig.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\load-jsconfig.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack-config.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack-config.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\compiled\webpack\bundle5.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\compiled\webpack\bundle5.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\compiled\webpack\webpack.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\compiled\webpack\webpack.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack\plugins\define-env-plugin.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack\plugins\define-env-plugin.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\swc\index.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\swc\index.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack\loaders\next-barrel-loader.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack\loaders\next-barrel-loader.js
+<w>  at resolve commonjs c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack\loaders\next-barrel-loader.js
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Resolving '../../../typescript/lib/typescript' in c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build for build dependencies doesn't lead to expected result 'C:\Users\moham\memora-backend\Front-end\node_modules\typescript\lib\typescript.js', but to 'c:\Users\moham\memora-backend\Front-end\node_modules\typescript\lib\typescript.js' instead. Resolving dependencies are ignored for this path.
+<w>  at resolve commonjs file ../../../typescript/lib/typescript (expected C:\Users\moham\memora-backend\Front-end\node_modules\typescript\lib\typescript.js)
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\load-jsconfig.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\load-jsconfig.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack-config.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack-config.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack\loaders\next-swc-loader.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\compiled\webpack\bundle5.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\compiled\webpack\bundle5.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\compiled\webpack\webpack.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\compiled\webpack\webpack.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack\plugins\define-env-plugin.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack\plugins\define-env-plugin.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\swc\index.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\swc\index.js
+<w>  at file dependencies c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack\loaders\next-barrel-loader.js
+<w>  at file c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack\loaders\next-barrel-loader.js
+<w>  at resolve commonjs c:\Users\moham\memora-backend\Front-end\node_modules\next\dist\build\webpack\loaders\next-barrel-loader.js
+ ⨯ ./app/dashboard/patient/symptoms/page.tsx
+Error: 
+  [31mx[0m Unexpected token `DashboardLayout`. Expected jsx identifier
+     ,-[[36;1;4mc:\Users\moham\memora-backend\Front-end\app\dashboard\patient\symptoms\page.tsx[0m:285:1]
+ [2m285[0m |   }
+ [2m286[0m | 
+ [2m287[0m |   return (
+ [2m288[0m |     <DashboardLayout title="متابعة الأعراض">
+     : [31;1m     ^^^^^^^^^^^^^^^[0m
+ [2m289[0m |       <div className="relative min-h-full" dir="rtl">
+ [2m290[0m |         <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+ [2m291[0m |           <div className="absolute top-[-100px] right-[-80px] w-[460px] h-[460px] rounded-full bg-blue-200/20 blur-[120px]" />
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/dashboard/patient/symptoms/page.tsx
+ ⨯ ./app/dashboard/patient/symptoms/page.tsx
+Error: 
+  [31mx[0m Unexpected token `DashboardLayout`. Expected jsx identifier
+     ,-[[36;1;4mc:\Users\moham\memora-backend\Front-end\app\dashboard\patient\symptoms\page.tsx[0m:285:1]
+ [2m285[0m |   }
+ [2m286[0m | 
+ [2m287[0m |   return (
+ [2m288[0m |     <DashboardLayout title="متابعة الأعراض">
+     : [31;1m     ^^^^^^^^^^^^^^^[0m
+ [2m289[0m |       <div className="relative min-h-full" dir="rtl">
+ [2m290[0m |         <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+ [2m291[0m |           <div className="absolute top-[-100px] right-[-80px] w-[460px] h-[460px] rounded-full bg-blue-200/20 blur-[120px]" />
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/dashboard/patient/symptoms/page.tsx

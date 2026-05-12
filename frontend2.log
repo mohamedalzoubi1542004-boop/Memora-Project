@@ -1,0 +1,128 @@
+
+> memora-4@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3002
+
+ ✓ Starting...
+ ✓ Ready in 4.2s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 1043ms (72 modules)
+ ○ Compiling /dashboard/patient/profile ...
+ ✓ Compiled /dashboard/patient/profile in 9.1s (545 modules)
+ GET /dashboard/patient/profile 200 in 9526ms
+ ✓ Compiled in 618ms (272 modules)
+ ○ Compiling /dashboard/doctor/profile ...
+ ✓ Compiled /dashboard/doctor/profile in 4.7s (519 modules)
+ GET /dashboard/doctor/profile 200 in 4858ms
+ ✓ Compiled /dashboard/admin in 391ms (525 modules)
+ GET /dashboard/admin 200 in 464ms
+ ○ Compiling /dashboard/patient/mmse ...
+ ✓ Compiled /dashboard/patient/mmse in 4.9s (1481 modules)
+ GET /dashboard/patient/mmse 200 in 5203ms
+ ○ Compiling / ...
+ ✓ Compiled / in 8.4s (1878 modules)
+ GET / 200 in 9012ms
+ ○ Compiling /games ...
+ ✓ Compiled /games in 1922ms (1887 modules)
+ ○ Compiling /games/sequence-recall ...
+ ✓ Compiled /games/sequence-recall in 2.5s (1930 modules)
+ ○ Compiling /games/memory-cards ...
+ ✓ Compiled /games/memory-cards in 2.1s (1938 modules)
+ ○ Compiling /login ...
+ ✓ Compiled /login in 2s (1944 modules)
+ ○ Compiling /dashboard/patient ...
+ ✓ Compiled /dashboard/patient in 1288ms (1954 modules)
+ ○ Compiling /dashboard/patient/mmse ...
+ ✓ Compiled /dashboard/patient/mmse in 1890ms (1217 modules)
+ ○ Compiling /dashboard/patient/games ...
+ ✓ Compiled /dashboard/patient/games in 1854ms (2418 modules)
+ ○ Compiling /dashboard/patient/symptoms ...
+ ✓ Compiled /dashboard/patient/symptoms in 2.7s (2463 modules)
+ ○ Compiling /dashboard/patient/appointments ...
+ ✓ Compiled /dashboard/patient/appointments in 987ms (2455 modules)
+ ○ Compiling /dashboard/messages ...
+ ✓ Compiled /dashboard/messages in 869ms (2461 modules)
+ ✓ Compiled /dashboard/patient/profile in 443ms (1219 modules)
+ GET /login 200 in 298ms
+ ✓ Compiled /dashboard/admin in 483ms (784 modules)
+ GET /login 200 in 226ms
+ GET /login 200 in 50ms
+ GET /login 200 in 53ms
+ ○ Compiling /register ...
+ ✓ Compiled /register in 1402ms (2011 modules)
+ ✓ Compiled /dashboard/messages in 192ms (275 modules)
+ ✓ Compiled /dashboard/patient/appointments in 289ms (279 modules)
+ GET /login 200 in 128ms
+ ○ Compiling / ...
+ ✓ Compiled / in 1530ms (719 modules)
+ GET / 200 in 1876ms
+ ○ Compiling /dashboard/patient ...
+ ✓ Compiled /dashboard/patient in 687ms (711 modules)
+ ✓ Compiled in 3.6s (1985 modules)
+ ✓ Compiled in 1151ms (1991 modules)
+ ✓ Compiled in 2.4s (2005 modules)
+ ✓ Compiled in 1165ms (1280 modules)
+ ✓ Compiled in 2.4s (2009 modules)
+ ✓ Compiled in 2.1s (1282 modules)
+ ✓ Compiled in 1216ms (1284 modules)
+ ✓ Compiled in 1265ms (1286 modules)
+ ✓ Compiled in 731ms (1286 modules)
+ ✓ Compiled in 802ms (1286 modules)
+ ✓ Compiled in 876ms (1286 modules)
+ ✓ Compiled in 920ms (1286 modules)
+ ✓ Compiled in 905ms (1286 modules)
+ ✓ Compiled in 1037ms (1286 modules)
+ ✓ Compiled in 812ms (1286 modules)
+ ✓ Compiled in 962ms (1289 modules)
+ ✓ Compiled in 747ms (1289 modules)
+ ✓ Compiled in 656ms (1289 modules)
+ ✓ Compiled in 788ms (1289 modules)
+ ✓ Compiled in 614ms (1289 modules)
+ ✓ Compiled in 870ms (1289 modules)
+ ✓ Compiled in 1374ms (1292 modules)
+ ✓ Compiled in 1720ms (1294 modules)
+ ✓ Compiled in 432ms (1294 modules)
+ GET /dashboard/patient 200 in 536ms
+ ○ Compiling /dashboard/patient/mmse ...
+ ✓ Compiled /dashboard/patient/mmse in 3.5s (1205 modules)
+ ○ Compiling /dashboard/patient/symptoms ...
+ ✓ Compiled /dashboard/patient/symptoms in 774ms (1229 modules)
+ ○ Compiling /dashboard/patient/games ...
+ ✓ Compiled /dashboard/patient/games in 1003ms (1232 modules)
+ ✓ Compiled /dashboard/patient/appointments in 354ms (1238 modules)
+ ✓ Compiled /dashboard/messages in 389ms (1233 modules)
+ ○ Compiling /dashboard/patient/profile ...
+ ✓ Compiled /dashboard/patient/profile in 970ms (1219 modules)
+ ✓ Compiled /login in 335ms (1223 modules)
+ GET /login 200 in 436ms
+ ○ Compiling /dashboard/admin ...
+ ✓ Compiled /dashboard/admin in 967ms (1229 modules)
+ GET /login 200 in 141ms
+ GET /login 200 in 72ms
+ GET /dashboard/patient/profile 200 in 105ms
+ ○ Compiling / ...
+ ✓ Compiled / in 671ms (1229 modules)
+ GET / 200 in 885ms
+ ○ Compiling /dashboard/family ...
+ ✓ Compiled /dashboard/family in 2.9s (2512 modules)
+ ✓ Compiled in 586ms (1298 modules)
+ ○ Compiling /dashboard/family/burnout ...
+ ✓ Compiled /dashboard/family/burnout in 668ms (2005 modules)
+ GET /login 200 in 242ms
+ ○ Compiling /dashboard/doctor ...
+ ✓ Compiled /dashboard/doctor in 1811ms (2025 modules)
+ ○ Compiling /dashboard/doctor/patients ...
+ ✓ Compiled /dashboard/doctor/patients in 689ms (2026 modules)
+ ○ Compiling /dashboard/doctor/upload-mri ...
+ ✓ Compiled /dashboard/doctor/upload-mri in 1097ms (2038 modules)
+ ○ Compiling /dashboard/doctor/appointments ...
+ ✓ Compiled /dashboard/doctor/appointments in 1081ms (2047 modules)
+ ○ Compiling /dashboard/doctor/reports ...
+ ✓ Compiled /dashboard/doctor/reports in 958ms (2060 modules)
+ ✓ Compiled /dashboard/messages in 440ms (732 modules)
+ ✓ Compiled /dashboard/doctor/profile in 383ms (736 modules)
+ GET /login 200 in 208ms
+Terminate batch job (Y/N)? 
+[?25h

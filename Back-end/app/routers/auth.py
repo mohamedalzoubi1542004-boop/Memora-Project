@@ -97,7 +97,7 @@ def register(data: UserRegister, db: Session = Depends(get_db)):
         user_id=user.id,
         full_name=user.full_name,
         role=user.role.value,
-        is_verified=user.is_verified,
+        is_verified=bool(user.is_verified),
     )
 
 
@@ -150,7 +150,7 @@ def register_doctor(
         full_name=user.full_name,
         role=user.role.value,
         is_approved=False,
-        is_verified=user.is_verified,
+        is_verified=bool(user.is_verified),
     )
 
 
@@ -176,7 +176,7 @@ def login(data: UserLogin, db: Session = Depends(get_db)):
         full_name=user.full_name,
         role=user.role.value,
         is_approved=is_approved,
-        is_verified=user.is_verified,
+        is_verified=bool(user.is_verified),
     )
 
 

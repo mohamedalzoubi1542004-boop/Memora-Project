@@ -22,7 +22,7 @@ class Token(BaseModel):
     full_name: str
     role: str
     is_approved: bool | None = None   # only set for doctor accounts
-    is_verified: bool = False
+    is_verified: bool | None = False
 
 
 class UserOut(BaseModel):

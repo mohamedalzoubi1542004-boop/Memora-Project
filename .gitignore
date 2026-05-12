@@ -1,3 +1,10 @@
+# ── Root-level virtualenv ─────────────────────────────────────────────────────
+Include/
+Lib/
+Scripts/
+venv/
+__pycache__/
+
 # ── Python virtualenv (Back-end) ─────────────────────────────────────────────
 Back-end/Include/
 Back-end/Lib/

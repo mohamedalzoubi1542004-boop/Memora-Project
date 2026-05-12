@@ -1,6 +1,0 @@
-{
-  "img_size": 456,
-  "class_names": ["MildDemented", "ModerateDemented", "NonDemented"],
-  "model_filename": "model.h5",
-  "temperature_filename": "temperature_T.json"
-}

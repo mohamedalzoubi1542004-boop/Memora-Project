@@ -241,7 +241,7 @@ def platform_activity(
         events.append({
             "type": "appointment",
             "label": "موعد جديد",
-            "sub": a.status.value,
+            "sub": getattr(a.status, "value", str(a.status)),
             "date": a.created_at.isoformat() if a.created_at else None,
         })
 

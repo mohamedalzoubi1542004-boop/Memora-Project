@@ -26,10 +26,17 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (!user) return;
-    Promise.all([adminApi.stats(), adminApi.pendingDoctors(), adminApi.allDoctors(), adminApi.allUsers(), patientApi.list(), adminApi.activity()])
-      .then(([s, pending, all, u, pts, acts]) => {
-        setStats(s); setPendingDoctors(pending as any[]); setAllDoctors(all as any[]); setUsers(u as any[]); setPatients(pts as any[]); setActivityLog(acts as any[]);
-      }).catch(() => {});
+    Promise.allSettled([
+      adminApi.stats(), adminApi.pendingDoctors(), adminApi.allDoctors(),
+      adminApi.allUsers(), patientApi.list(), adminApi.activity(),
+    ]).then(([s, pending, all, u, pts, acts]) => {
+      if (s.status      === "fulfilled") setStats(s.value);
+      if (pending.status === "fulfilled") setPendingDoctors(pending.value as any[]);
+      if (all.status    === "fulfilled") setAllDoctors(all.value as any[]);
+      if (u.status      === "fulfilled") setUsers(u.value as any[]);
+      if (pts.status    === "fulfilled") setPatients(pts.value as any[]);
+      if (acts.status   === "fulfilled") setActivityLog(acts.value as any[]);
+    });
   }, [user]);
 
   async function approveDoctor(id: number) {
@@ -340,7 +347,6 @@ export default function AdminDashboard() {
                   </thead>
                   <tbody className="divide-y divide-gray-50">
                     {patients.map((p) => {
-                      const assignedDoc = allDoctors.find((d) => d.id === p.assigned_doctor_id);
                       return (
                         <tr key={p.id} className="hover:bg-slate-50/60 transition-colors">
                           <td className={`${tdClass} text-slate-900 font-bold`}>{p.full_name}</td>

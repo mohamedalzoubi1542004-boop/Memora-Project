@@ -99,21 +99,17 @@ export default function RegisterPage() {
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-lg"
+        className="w-full max-w-2xl"
       >
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex w-16 h-16 rounded-2xl items-center justify-center mb-4 bg-gradient-to-br from-blue-600 to-cyan-500 shadow-xl shadow-blue-600/30">
-            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
-              <circle cx="24" cy="24" r="16" fill="white" fillOpacity=".4"/>
-              <circle cx="24" cy="24" r="5" fill="white"/>
-            </svg>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/images/logo.png" alt="Memora" className="h-12 w-auto object-contain mx-auto mb-4" />
           <h1 className="text-3xl font-black text-slate-900">إنشاء حساب</h1>
           <p className="text-slate-500 mt-1">انضم إلى منصة Memora الطبية</p>
         </div>
 
-        <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-8">
+        <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-10">
           <form onSubmit={handleSubmit} className="space-y-5" autoComplete="off">
 
             {/* Role selection */}

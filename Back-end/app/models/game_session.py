@@ -15,6 +15,7 @@ class GameSession(Base):
     id = Column(Integer, primary_key=True, index=True)
     patient_id = Column(Integer, ForeignKey("patients.id", ondelete="CASCADE"), nullable=False)
     game_type = Column(String, nullable=False)   # one of GAME_TYPES
+    difficulty = Column(String, default="medium")
     score = Column(Integer, nullable=False)
     level_reached = Column(Integer)
     time_seconds = Column(Integer)

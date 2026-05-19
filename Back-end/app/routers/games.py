@@ -40,6 +40,7 @@ def submit_game(
     session = GameSession(
         patient_id=patient.id,
         game_type=data.game_type,
+        difficulty=data.difficulty,
         score=data.score,
         level_reached=data.level_reached,
         time_seconds=data.time_seconds,

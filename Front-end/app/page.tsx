@@ -5,7 +5,7 @@ import { motion, useInView, AnimatePresence } from "framer-motion";
 import {
   BrainCircuit, Menu, X, Upload, Cpu, Microscope,
   BarChart3, Shield, Activity, Building2, Phone, Mail,
-  Star, ArrowLeft, Plus, Minus, MessageCircle, Clock,
+  ArrowLeft, Plus, Minus, MessageCircle, Clock,
   Zap, CheckCircle, Calendar, Brain, Users, BookOpen,
   Gamepad2, Layers, Grid3X3, ListOrdered,
 } from "lucide-react";
@@ -55,12 +55,6 @@ const steps = [
   { number: "04", icon: CheckCircle, title: "التدخل المبكر والرعاية", description: "يستلم الطبيب تقريراً تفصيلياً مع خطة متابعة مخصصة تمنح المريض وعائلته النافذة الذهبية.", color: "amber" },
 ];
 
-const partners = [
-  { name: "د. سارة الخالدي", role: "أخصائية أعصاب — مستشفى الملك فيصل التخصصي", initials: "سخ", bg: "#E0F2FE" },
-  { name: "د. محمد العلي", role: "استشاري أعصاب — مركز الرنين المغناطيسي الدولي", initials: "مع", bg: "#ECFDF5" },
-  { name: "د. فاطمة الزهراني", role: "باحثة علوم أعصاب — جامعة الملك سعود", initials: "فز", bg: "#FEF3C7" },
-  { name: "د. أحمد المنصور", role: "استشاري طب الشيخوخة — مدينة الطب الجامعية", initials: "أم", bg: "#EDE9FE" },
-];
 
 const faqs = [
   { q: "ما مدى دقة تشخيص نظام Memora؟", a: "يحقق نظام Memora دقة تشخيصية تتجاوز 98% في تصنيف مراحل الضمور الدماغي (CN/MCI/AD)، مدعومة بالتحقق السريري على بيانات ADNI التي تضم أكثر من 3,182 فحص من 675 مريضاً." },
@@ -76,11 +70,6 @@ const blogPosts = [
   { title: "MCI: النافذة الذهبية للتدخل قبل فوات الأوان", category: "التشخيص المبكر", date: "1 أبريل 2026", author: "د. محمد العلي", bg: "from-purple-50 to-violet-50" },
 ];
 
-const reviews = [
-  { text: "نظام Memora غيّر طريقة تعاملنا مع حالات الضعف الإدراكي المبكر. الدقة التشخيصية مذهلة والتقارير التفصيلية تمنحنا رؤية واضحة لم تكن ممكنة من قبل.", name: "د. سارة الخالدي", location: "الرياض — المملكة العربية السعودية", initials: "سخ", bg: "#E0F2FE", rating: 5 },
-  { text: "القدرة على اكتشاف التغيرات الدماغية في مراحلها الأولى منحت مرضاي فرصة ذهبية للتدخل المبكر. أداة لا غنى عنها في ممارستي اليومية كطبيب أعصاب.", name: "د. أحمد المنصور", location: "جدة — المملكة العربية السعودية", initials: "أم", bg: "#EDE9FE", rating: 5 },
-  { text: "كباحثة في مجال التنكس العصبي، أذهلني مستوى الدقة في تحليل حجم الحصين. البيانات الكمية الموثوقة التي يقدمها النظام أثرت أبحاثنا بشكل ملحوظ.", name: "د. فاطمة الزهراني", location: "الرياض — جامعة الملك سعود", initials: "فز", bg: "#FEF3C7", rating: 5 },
-];
 
 /* ═══════════════════════════════════════
    SECTION HEADER
@@ -105,67 +94,7 @@ function SectionHeader({ label: _label, title, subtitle, icon: Icon, inView }: {
   );
 }
 
-/* ═══════════════════════════════════════
-   DUAL BRAIN SVG
-   ═══════════════════════════════════════ */
-function DualBrain() {
-  return (
-    <svg viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg" className="w-full h-full drop-shadow-2xl">
-      <defs>
-        <linearGradient id="og" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#FBBF24" stopOpacity="0.9" />
-          <stop offset="100%" stopColor="#F97316" stopOpacity="0.85" />
-        </linearGradient>
-        <linearGradient id="dg" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#06B6D4" />
-          <stop offset="100%" stopColor="#0E7490" />
-        </linearGradient>
-        <clipPath id="lh"><rect x="0" y="0" width="200" height="400" /></clipPath>
-        <clipPath id="rh"><rect x="200" y="0" width="200" height="400" /></clipPath>
-        <filter id="glow"><feGaussianBlur stdDeviation="2.5" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
-      </defs>
-      {/* Left organic side */}
-      <g clipPath="url(#lh)">
-        <ellipse cx="200" cy="180" rx="152" ry="138" fill="url(#og)" opacity="0.88" />
-        <path d="M75,118 Q98,98 128,112 Q158,126 144,152 Q130,178 108,173 Q86,168 76,148 Q66,128 75,118Z" fill="#D97706" opacity="0.55" />
-        <path d="M95,158 Q128,143 154,158 Q180,173 164,198 Q148,223 122,218 Q96,213 86,193 Q76,173 95,158Z" fill="#B45309" opacity="0.45" />
-        <path d="M70,195 Q95,178 120,195 Q145,212 135,237 Q125,262 103,260 Q80,258 70,237 Q60,216 70,195Z" fill="#92400E" opacity="0.35" />
-        <path d="M115,97 Q142,82 163,97 Q184,112 173,138 Q162,164 142,161 Q122,158 112,138 Q102,118 115,97Z" fill="#F59E0B" opacity="0.5" />
-        <ellipse cx="113" cy="242" rx="44" ry="22" fill="#FBBF24" opacity="0.65" />
-        <text x="88" y="247" fill="#78350F" fontSize="9" fontWeight="bold" opacity="0.9">الفص الصدغي</text>
-      </g>
-      {/* Right digital side */}
-      <g clipPath="url(#rh)">
-        <ellipse cx="200" cy="180" rx="152" ry="138" fill="#0A1628" opacity="0.97" />
-        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(i => (
-          <line key={`h${i}`} x1="200" y1={55 + i * 22} x2="358" y2={55 + i * 22} stroke="#06B6D4" strokeWidth="0.4" opacity="0.25" />
-        ))}
-        {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
-          <line key={`v${i}`} x1={204 + i * 20} y1="45" x2={204 + i * 20} y2="315" stroke="#06B6D4" strokeWidth="0.4" opacity="0.25" />
-        ))}
-        <ellipse cx="200" cy="180" rx="151" ry="137" fill="none" stroke="#06B6D4" strokeWidth="1.2" opacity="0.7" />
-        {[[242, 118, 3], [290, 138, 2.5], [318, 168, 4], [268, 183, 3.5], [238, 208, 2.5], [308, 208, 3.5], [252, 238, 2.5], [298, 253, 2.5], [338, 178, 2.5], [218, 163, 2.5], [278, 163, 3.5]].map(([x, y, r], i) => (
-          <g key={i}>
-            <circle cx={x} cy={y} r={(r as number) + 3} fill="#06B6D4" opacity="0.12" />
-            <circle cx={x} cy={y} r={r as number} fill="#00E5FF" />
-          </g>
-        ))}
-        {[[242, 118, 290, 138], [290, 138, 318, 168], [318, 168, 268, 183], [268, 183, 238, 208], [238, 208, 252, 238], [308, 208, 298, 253], [268, 183, 308, 208], [218, 163, 268, 183], [278, 163, 318, 168]].map(([x1, y1, x2, y2], i) => (
-          <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#06B6D4" strokeWidth="0.8" opacity="0.55" />
-        ))}
-        <ellipse cx="260" cy="248" rx="34" ry="17" fill="#06B6D4" opacity="0.18" />
-        <ellipse cx="260" cy="248" rx="34" ry="17" fill="none" stroke="#06B6D4" strokeWidth="1.3" opacity="0.85" />
-        <text x="243" y="252" fill="#67E8F9" fontSize="8" fontWeight="bold" filter="url(#glow)">الحصين</text>
-        <text x="308" y="128" fill="#67E8F9" fontSize="6.5" opacity="0.85">MCI: 0.73</text>
-        <text x="308" y="140" fill="#67E8F9" fontSize="6.5" opacity="0.7">CN: 0.21</text>
-        <text x="308" y="152" fill="#67E8F9" fontSize="6.5" opacity="0.55">AD: 0.06</text>
-      </g>
-      {/* Divider */}
-      <line x1="200" y1="42" x2="200" y2="318" stroke="white" strokeWidth="2" opacity="0.9" />
-      <line x1="200" y1="42" x2="200" y2="318" stroke="#06B6D4" strokeWidth="1" opacity="0.7" filter="url(#glow)" />
-    </svg>
-  );
-}
+
 
 /* ═══════════════════════════════════════
    NAVBAR
@@ -177,7 +106,6 @@ function Navbar({ scrolled, mobileOpen, setMobileOpen }: { scrolled: boolean; mo
     { label: "التكنولوجيا", href: "#technology" },
     { label: "الألعاب المعرفية", href: "/games" },
     { label: "أهمية الكشف المبكر", href: "#early-detection" },
-    { label: "شركاؤنا", href: "#partners" },
     { label: "اتصل بنا", href: "#contact" },
   ];
   return (
@@ -222,9 +150,9 @@ function Navbar({ scrolled, mobileOpen, setMobileOpen }: { scrolled: boolean; mo
             <div className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
             <motion.div initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} transition={{ type: "spring", damping: 25 }} className="absolute top-0 right-0 w-[80%] max-w-sm h-full bg-white border-r border-gray-100 shadow-2xl flex flex-col">
               <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center"><BrainCircuit size={18} className="text-white" /></div>
-                  <span className="font-black text-slate-800">Memora</span>
+                <div className="flex items-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/images/logo.png" alt="Memora" className="h-8 w-auto object-contain" />
                 </div>
                 <button onClick={() => setMobileOpen(false)} className="text-slate-400 hover:text-slate-800"><X size={22} /></button>
               </div>
@@ -292,8 +220,7 @@ function HeroSection() {
 
           {/* Subtitle */}
           <p className="text-lg md:text-xl text-slate-500 mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0">
-            نحمي ذكرياتك قبل أن تتلاشى. تحليل دقيق لصور الرنين المغناطيسي لاكتشاف التغيرات الدماغية {" "}
-            قبل ظهور الأعراض بسنوات.
+            نحمي ذكرياتك قبل أن تتلاشى. تحليل دقيق لصور الرنين المغناطيسي لاكتشاف التغيرات الدماغية قبل ظهور الأعراض بسنوات.
           </p>
 
           {/* CTAs */}
@@ -499,32 +426,6 @@ function HowItWorksSection() {
 /* ═══════════════════════════════════════
    PARTNERS / ADVISORY BOARD
    ═══════════════════════════════════════ */
-function PartnersSection() {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
-  return (
-    <section id="partners" className="py-16 md:py-24 bg-cyan-50 relative overflow-hidden" ref={ref}>
-      <div className="container mx-auto px-4">
-        <SectionHeader label="المجلس الاستشاري" title="أطباؤنا ومراكزنا المعتمدة" subtitle="نتعاون مع نخبة من أطباء الأعصاب والمراكز التشخيصية المتقدمة" icon={Users} inView={inView} />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mt-12">
-          {partners.map((p, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6, delay: 0.1 + i * 0.1 }}
-              className="bg-white rounded-[2rem] border border-gray-100 overflow-hidden hover:shadow-xl hover:shadow-cyan-100/40 transition-all duration-300 hover:-translate-y-2 group">
-              <div className="w-full h-44 flex items-center justify-center" style={{ backgroundColor: p.bg }}>
-                <div className="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center text-2xl font-black text-gray-700 shadow-lg" style={{ backgroundColor: p.bg }}>{p.initials}</div>
-              </div>
-              <div className="p-5 text-center">
-                <p className="font-bold text-gray-900 text-base mb-1 group-hover:text-cyan-600 transition-colors">{p.name}</p>
-                <p className="text-xs text-gray-500 mb-4 leading-relaxed">{p.role}</p>
-                <Link href="/register" className="block w-full py-2.5 rounded-xl bg-cyan-50 text-cyan-600 font-bold text-sm hover:bg-cyan-500 hover:text-white transition-all duration-200 text-center">حجز استشارة</Link>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 /* ═══════════════════════════════════════
    FAQ SECTION
@@ -652,43 +553,6 @@ function BlogSection() {
 /* ═══════════════════════════════════════
    REVIEWS SECTION
    ═══════════════════════════════════════ */
-function ReviewsSection() {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
-  return (
-    <section className="py-20 bg-white" ref={ref}>
-      <div className="container mx-auto px-4">
-        <SectionHeader label="آراء المختصين" title="ماذا يقول أطباؤنا" subtitle="تجارب حقيقية من أطباء أعصاب يعتمدون على Memora يومياً" icon={Star} inView={inView} />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-12 mb-8">
-          {reviews.map((r, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6, delay: 0.1 + i * 0.15 }}
-              className="group relative flex flex-col justify-between p-8 rounded-[2rem] h-full transition-all duration-300 bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-cyan-100/40 hover:-translate-y-2">
-              <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" className="absolute top-6 left-6 w-8 h-8 text-gray-100 group-hover:text-cyan-50 transition-colors" xmlns="http://www.w3.org/2000/svg">
-                <path d="M464 32H336c-26.5 0-48 21.5-48 48v128c0 26.5 21.5 48 48 48h80v64c0 35.3-28.7 64-64 64h-8c-13.3 0-24 10.7-24 24v48c0 13.3 10.7 24 24 24h8c88.4 0 160-71.6 160-160V80c0-26.5-21.5-48-48-48zm-288 0H48C21.5 32 0 53.5 0 80v128c0 26.5 21.5 48 48 48h80v64c0 35.3-28.7 64-64 64h-8c-13.3 0-24 10.7-24 24v48c0 13.3 10.7 24 24 24h8c88.4 0 160-71.6 160-160V80c0-26.5-21.5-48-48-48z" />
-              </svg>
-              <div>
-                <div className="relative z-10 flex gap-1 mb-4">
-                  {Array.from({ length: r.rating }).map((_, j) => (<Star key={j} size={14} className="fill-amber-400 text-amber-400" />))}
-                </div>
-                <p className="relative z-10 text-slate-600 font-medium leading-relaxed mb-6 text-sm">&ldquo;{r.text}&rdquo;</p>
-              </div>
-              <div className="relative z-10 flex items-center gap-3 mt-auto pt-4 border-t border-gray-50">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-gray-700 text-sm shadow-inner" style={{ backgroundColor: r.bg }}>{r.initials}</div>
-                <div>
-                  <p className="font-bold text-slate-900 text-sm">{r.name}</p>
-                  <p className="text-xs text-slate-400">{r.location}</p>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-        <div className="flex justify-center">
-          <button className="px-8 py-3 rounded-xl bg-white border border-gray-200 text-slate-700 font-bold hover:border-cyan-400 hover:text-cyan-600 transition-all duration-300 shadow-sm hover:shadow-md">عرض المزيد</button>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 /* ═══════════════════════════════════════
    GAMES SECTION
@@ -729,7 +593,7 @@ function GamesSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.2 + i * 0.07 }}
-              className="group bg-white border border-gray-100 rounded-[1.5rem] p-5 flex flex-col items-center text-center hover:border-blue-100 hover:shadow-xl hover:shadow-gray-200/60 transition-all duration-300 hover:-translate-y-1"
+              className="group relative bg-white border border-gray-100 rounded-[1.5rem] p-5 flex flex-col items-center text-center hover:border-blue-100 hover:shadow-xl hover:shadow-gray-200/60 transition-all duration-300 hover:-translate-y-1"
             >
               <div className={`w-12 h-12 rounded-2xl ${bg} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300`}>
                 <Icon size={24} className={color} strokeWidth={1.75} />
@@ -771,9 +635,9 @@ function Footer() {
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
           <div className="lg:col-span-4 space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-cyan-500 flex items-center justify-center"><BrainCircuit size={22} className="text-white" strokeWidth={2} /></div>
-              <h2 className="text-2xl font-black text-white tracking-tight">Memora</h2>
+            <div className="flex items-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/images/logo.png" alt="Memora" className="h-10 w-auto object-contain brightness-0 invert" />
             </div>
             <p className="text-gray-400 leading-relaxed text-sm max-w-xs">نظام طبي ذكي للكشف المبكر عن مرض الزهايمر باستخدام الذكاء الاصطناعي وتحليل صور الرنين المغناطيسي.</p>
             <p className="text-amber-400 font-bold text-sm italic">"لأن كل ذكرى تستحق الحماية"</p>
@@ -792,7 +656,7 @@ function Footer() {
           <div className="lg:col-span-2 lg:col-start-6">
             <h4 className="text-base font-bold text-white mb-6 relative inline-block">روابط سريعة<span className="absolute -bottom-2 right-0 w-8 h-1 bg-cyan-500 rounded-full" /></h4>
             <ul className="space-y-3">
-              {[["الرئيسية", "#home"], ["كيف يعمل", "#how-it-works"], ["التكنولوجيا", "#technology"], ["شركاؤنا", "#partners"]].map(([l, h]) => (
+              {[["الرئيسية", "#home"], ["كيف يعمل", "#how-it-works"], ["التكنولوجيا", "#technology"]].map(([l, h]) => (
                 <li key={l}><a href={h} className="text-gray-400 hover:text-cyan-400 transition-colors text-sm font-medium flex items-center gap-2 group"><span className="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-cyan-500 transition-colors" />{l}</a></li>
               ))}
             </ul>
@@ -877,11 +741,9 @@ export default function MemoraPage() {
         <FeaturesSection />
         <GamesSection />
         <HowItWorksSection />
-        <PartnersSection />
         <FaqSection openFaq={openFaq} setOpenFaq={setOpenFaq} />
         <PartnerCTASection />
         <BlogSection />
-        <ReviewsSection />
       </main>
       <Footer />
       <FloatingChat />

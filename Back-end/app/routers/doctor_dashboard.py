@@ -68,14 +68,12 @@ def doctor_stats(
         .count()
     )
 
-    # High-risk: last MRI is Moderate/Mild demented
+    # High-risk: last MRI is Moderate/Mild demented — only this doctor's patients
     high_risk = (
         db.query(func.count(Patient.id.distinct()))
-        .join(
-            Diagnosis,
-            Diagnosis.patient_id == Patient.id,
-        )
+        .join(Diagnosis, Diagnosis.patient_id == Patient.id)
         .filter(
+            Patient.assigned_doctor_id == doctor.id,
             Diagnosis.classification.in_(["MildDemented", "ModerateDemented"]),
         )
         .scalar() or 0

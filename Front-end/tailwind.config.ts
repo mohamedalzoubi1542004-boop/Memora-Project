@@ -37,7 +37,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-tajawal)", "sans-serif"],
-        inter: ["var(--font-inter)", "sans-serif"],
+        outfit: ["var(--font-outfit)", "sans-serif"],
       },
       animation: {
         float: "float 6s ease-in-out infinite",

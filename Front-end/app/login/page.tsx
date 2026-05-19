@@ -54,13 +54,8 @@ export default function LoginPage() {
           transition={{ duration: 0.6 }}
           className="relative z-10 text-center"
         >
-          <div className="w-24 h-24 mx-auto mb-8 rounded-[2rem] bg-white/20 backdrop-blur border border-white/30 flex items-center justify-center shadow-xl">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-              <circle cx="24" cy="24" r="16" fill="white" fillOpacity=".4"/>
-              <circle cx="24" cy="24" r="5" fill="white"/>
-            </svg>
-          </div>
-          <h1 className="text-5xl font-black text-white mb-4 tracking-tight">Memora</h1>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/images/logo.png" alt="Memora" className="h-16 w-auto object-contain mx-auto mb-8 brightness-0 invert" />
           <p className="text-xl text-blue-100 max-w-sm leading-relaxed">
             منصة طبية ذكية للكشف المبكر عن الزهايمر وإدارة رعاية المرضى
           </p>
@@ -94,14 +89,9 @@ export default function LoginPage() {
           className="w-full max-w-md"
         >
           {/* Mobile logo */}
-          <div className="flex items-center gap-3 mb-8 lg:hidden">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-600/30">
-              <svg width="20" height="20" viewBox="0 0 48 48" fill="none">
-                <circle cx="24" cy="24" r="16" fill="white" fillOpacity=".4"/>
-                <circle cx="24" cy="24" r="5" fill="white"/>
-              </svg>
-            </div>
-            <span className="text-xl font-black text-slate-900">Memora</span>
+          <div className="flex items-center mb-8 lg:hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/logo.png" alt="Memora" className="h-10 w-auto object-contain" />
           </div>
 
           <div className="mb-8">

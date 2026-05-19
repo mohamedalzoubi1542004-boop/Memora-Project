@@ -14,7 +14,7 @@ from app.models.diagnosis import Diagnosis
 from app.models.mmse_result import MMSEResult
 from app.models.symptom_entry import SymptomEntry
 from app.models.daily_checkin import DailyCheckin
-from app.models.appointment import Appointment
+from app.models.appointment import Appointment, AppointmentStatus
 from app.models.game_session import GameSession
 from app.schemas.family_schema import FamilyContactCreate, FamilyContactOut
 from app.services.risk_service import compute_risk
@@ -134,7 +134,7 @@ def patient_summary(
         db.query(Appointment)
         .filter(
             Appointment.patient_id == patient_id,
-            Appointment.status == "approved",
+            Appointment.status == AppointmentStatus.APPROVED,
         )
         .order_by(Appointment.scheduled_at.asc())
         .limit(3)

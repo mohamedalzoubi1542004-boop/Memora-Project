@@ -108,14 +108,9 @@ export default function Sidebar() {
       dir="rtl"
     >
       {/* ── Logo ── */}
-      <div className="flex items-center gap-3 px-5 py-6 border-b border-gray-50">
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br from-blue-600 to-cyan-500 shadow-md shadow-blue-500/30">
-          <BrainCircuit size={18} className="text-white" strokeWidth={2} />
-        </div>
-        <div>
-          <span className="text-base font-black text-slate-900 tracking-tight">Memora</span>
-          <p className="text-[10px] text-slate-400 font-medium -mt-0.5">الكشف المبكر عن الزهايمر</p>
-        </div>
+      <div className="flex items-center px-5 py-4 border-b border-gray-50">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/images/logo.png" alt="Memora" className="h-10 w-auto object-contain" />
       </div>
 
       {/* ── User card ── */}

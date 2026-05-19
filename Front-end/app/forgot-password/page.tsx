@@ -100,18 +100,9 @@ export default function ForgotPasswordPage() {
     e.preventDefault();
     const code = digits.join("");
     if (code.length < 6) { setError("أدخل الرمز المكوّن من 6 أرقام"); return; }
-    setLoading(true);
-    setError("");
-    try {
-      await verificationApi.verifyOtp(identifier.trim(), code, "reset");
-      setStep("newpass");
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : "رمز غير صحيح — حاول مجدداً");
-      setDigits(Array(6).fill(""));
-      inputRefs.current[0]?.focus();
-    } finally {
-      setLoading(false);
-    }
+    // Don't consume the OTP here — reset_password will verify it in step 3.
+    // Just advance the UI.
+    setStep("newpass");
   }
 
   async function handleResend() {

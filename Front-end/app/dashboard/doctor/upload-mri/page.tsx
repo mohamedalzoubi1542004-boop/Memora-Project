@@ -129,7 +129,7 @@ export default function UploadMRIPage() {
                     <Upload size={26} className="text-white" strokeWidth={2} />
                   </div>
                   <p className="text-slate-900 font-extrabold text-base">اسحب صورة MRI وأفلتها هنا</p>
-                  <p className="text-slate-400 text-sm">أو انقر للاختيار — PNG / JPG / DICOM</p>
+                  <p className="text-slate-400 text-sm">أو انقر للاختيار — JPEG / PNG / BMP / TIFF</p>
                 </div>
               )}
             </div>

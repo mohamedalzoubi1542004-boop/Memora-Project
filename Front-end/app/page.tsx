@@ -104,7 +104,7 @@ function Navbar({ scrolled, mobileOpen, setMobileOpen }: { scrolled: boolean; mo
     { label: "الرئيسية", href: "#home" },
     { label: "كيف يعمل النظام", href: "#how-it-works" },
     { label: "التكنولوجيا", href: "#technology" },
-    { label: "الألعاب المعرفية", href: "/games" },
+    { label: "الألعاب المعرفية", href: "#games" },
     { label: "أهمية الكشف المبكر", href: "#early-detection" },
     { label: "اتصل بنا", href: "#contact" },
   ];
@@ -201,7 +201,7 @@ function HeroSection() {
           className="w-full lg:w-1/2 text-center lg:text-right order-2 lg:order-1"
         >
           {/* Live badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-gray-100 shadow-sm mb-6 mx-auto lg:mx-0">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-gray-100 shadow-sm mb-6 mx-auto lg:mx-0 -mt-12">
             <span className="relative flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-600" />
@@ -210,12 +210,10 @@ function HeroSection() {
           </div>
 
           {/* Headline */}
-          <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-black text-slate-900 leading-[1.15] mb-6 tracking-tight">
-            الكشف المبكر عن الزهايمر
-            <br className="hidden lg:block" />
-            <span className="text-blue-600">
-              بالذكاء الاصطناعي
-            </span>
+          <h1 className="text-4xl md:text-5xl lg:text-[3rem] font-black text-slate-900 leading-[1.15] mb-6 tracking-tight">
+            <span className="whitespace-nowrap">الكشف المبكر عن الزهايمر</span>
+            <br />
+            <span className="text-blue-600 whitespace-nowrap mt-4 inline-block">بالذكاء الاصطناعي</span>
           </h1>
 
           {/* Subtitle */}
@@ -235,15 +233,6 @@ function HeroSection() {
             </a>
           </div>
 
-          {/* Social proof */}
-          <div className="flex items-center gap-4 text-sm text-slate-600 justify-center lg:justify-start">
-            <div className="flex -space-x-2 rtl:space-x-reverse">
-              {[{ i: "سخ", b: "#E0F2FE", c: "#1D4ED8" }, { i: "أم", b: "#EDE9FE", c: "#6D28D9" }, { i: "فز", b: "#FEF3C7", c: "#B45309" }, { i: "مع", b: "#D1FAE5", c: "#047857" }].map((a, idx) => (
-                <div key={idx} className="w-10 h-10 rounded-full border-2 border-white flex items-center justify-center text-xs font-bold bg-white shadow-sm" style={{ backgroundColor: a.b, color: a.c }}>{a.i}</div>
-              ))}
-            </div>
-            <p>أكثر من <span className="font-bold text-slate-900">+120</span> طبيب أعصاب يثق بنا</p>
-          </div>
         </motion.div>
 
         {/* ── Visual Side — 3D Brain Image ── */}
@@ -367,19 +356,19 @@ function FeaturesSection() {
             const Icon = feat.icon;
             return (
               <motion.div key={i} initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6, delay: 0.2 + i * 0.1 }}
-                className={`group relative p-8 md:p-10 rounded-[2rem] border transition-all duration-300 flex flex-col gap-6 ${feat.highlight ? "bg-cyan-600 border-cyan-600 text-white shadow-xl shadow-cyan-600/20" : "bg-white border-gray-100 hover:border-cyan-200 hover:shadow-xl hover:shadow-gray-200/50 hover:-translate-y-1"}`}>
-                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl transition-transform duration-500 group-hover:rotate-6 group-hover:scale-110 ${feat.highlight ? "bg-white/20 text-white" : "bg-cyan-50 text-cyan-600"}`}>
+                className="group relative p-8 md:p-10 rounded-[2rem] border bg-white border-gray-100 hover:bg-cyan-600 hover:border-cyan-600 hover:shadow-xl hover:shadow-cyan-600/20 hover:-translate-y-1 transition-all duration-300 flex flex-col gap-6">
+                <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl transition-all duration-300 bg-cyan-50 text-cyan-600 group-hover:bg-white/20 group-hover:text-white group-hover:rotate-6 group-hover:scale-110">
                   <Icon size={32} strokeWidth={1.5} />
                 </div>
                 <div className="flex flex-col gap-3">
-                  <h3 className={`text-2xl font-bold ${feat.highlight ? "text-white" : "text-gray-900"}`}>{feat.title}</h3>
-                  <p className={`text-base leading-relaxed ${feat.highlight ? "text-cyan-100" : "text-gray-500"}`}>{feat.description}</p>
+                  <h3 className="text-2xl font-bold text-gray-900 group-hover:text-white transition-colors duration-300">{feat.title}</h3>
+                  <p className="text-base leading-relaxed text-gray-500 group-hover:text-cyan-100 transition-colors duration-300">{feat.description}</p>
                 </div>
-                <a href="#how-it-works" className={`mt-auto pt-4 flex items-center gap-2 text-sm font-bold cursor-pointer w-fit ${feat.highlight ? "text-white" : "text-cyan-600"}`}>
+                <a href="#how-it-works" className="mt-auto pt-4 flex items-center gap-2 text-sm font-bold cursor-pointer w-fit text-cyan-600 group-hover:text-white transition-colors duration-300">
                   <span>اكتشف المزيد</span>
                   <ArrowLeft size={16} className="transition-transform duration-300 group-hover:-translate-x-2" />
                 </a>
-                {!feat.highlight && <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-t-[2rem]" />}
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-0 group-hover:opacity-0 transition-opacity duration-500 rounded-t-[2rem]" />
               </motion.div>
             );
           })}
@@ -612,12 +601,11 @@ function GamesSection() {
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <Link
-            href="/games"
+            href="/register"
             className="flex items-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full shadow-lg shadow-blue-500/30 transition-all duration-200 active:scale-95"
           >
             <Gamepad2 size={20} /> ابدأ التمارين المعرفية
           </Link>
-          <p className="text-sm text-slate-400">مجاني · لا يتطلب تسجيلاً للبدء</p>
         </motion.div>
       </div>
     </section>

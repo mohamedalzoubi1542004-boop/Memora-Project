@@ -202,6 +202,25 @@ def update_profile(
     return current_user
 
 
+@router.post("/me/avatar", response_model=UserOut)
+def upload_avatar(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Upload or replace the current user's profile picture."""
+    from app.utils.file_utils import ALLOWED_IMAGE_TYPES
+    if file.content_type not in ALLOWED_IMAGE_TYPES:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            "نوع الملف غير مدعوم — الرجاء رفع صورة بصيغة JPEG أو PNG أو WebP",
+        )
+    current_user.profile_image = save_upload(file, subfolder="avatars")
+    db.commit()
+    db.refresh(current_user)
+    return current_user
+
+
 class _ChangePasswordBody(BaseModel):
     current_password: str
     new_password: str

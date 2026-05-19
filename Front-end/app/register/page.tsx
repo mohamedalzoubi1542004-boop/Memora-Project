@@ -70,16 +70,16 @@ export default function RegisterPage() {
         is_verified: result.is_verified ?? false,
       });
 
-      // Send email OTP and redirect to verify page
+      // Send OTP (best-effort) then always go to verify page
+      // The verify page has a resend button if sending failed
       try {
         await verificationApi.sendOtp(email, "email", "verify");
-        const params = new URLSearchParams({ contact: email, method: "email" });
-        if (phone) params.set("phone", phone);
-        router.push(`/verify?${params.toString()}`);
       } catch {
-        // If OTP sending fails, go to dashboard anyway
-        router.push(roleDashboard(result.role));
+        // ignore — user can resend from the verify page
       }
+      const params = new URLSearchParams({ contact: email, method: "email" });
+      if (phone) params.set("phone", phone);
+      router.replace(`/verify?${params.toString()}`);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "حدث خطأ — حاول مجدداً");
     } finally {

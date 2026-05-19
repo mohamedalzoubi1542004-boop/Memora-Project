@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Stethoscope, Save, CheckCircle, Upload, FileText } from "lucide-react";
+import { Stethoscope, Save, CheckCircle, Upload, FileText, Camera } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { doctorApi, authApi, api } from "@/lib/api";
@@ -28,10 +28,13 @@ export default function DoctorProfilePage() {
 
   const [profile, setProfile]           = useState<any>(null);
   const [fetching, setFetching]         = useState(true);
-  const [saving, setSaving]             = useState(false);
-  const [uploadingCv, setUploadingCv]   = useState(false);
-  const [success, setSuccess]           = useState("");
-  const [error, setError]               = useState("");
+  const [saving, setSaving]               = useState(false);
+  const [uploadingCv, setUploadingCv]     = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarUrl, setAvatarUrl]         = useState<string | null>(null);
+  const [success, setSuccess]             = useState("");
+  const [error, setError]                 = useState("");
+  const avatarInputRef = useRef<HTMLInputElement>(null);
 
   const [fullName, setFullName]               = useState("");
   const [specialization, setSpecialization]   = useState("");
@@ -48,8 +51,24 @@ export default function DoctorProfilePage() {
       setLicenseNumber(d.license_number ?? "");
       setYearsExperience(d.years_experience != null ? String(d.years_experience) : "");
       setBio(d.bio ?? "");
+      if (d.profile_image) setAvatarUrl(`/api/uploads/${d.profile_image}`);
     }).catch(() => {}).finally(() => setFetching(false));
   }, [user]);
+
+  async function uploadAvatar(file: File) {
+    setUploadingAvatar(true); setSuccess(""); setError("");
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      await authApi.uploadAvatar(form);
+      setAvatarUrl(URL.createObjectURL(file));
+      setSuccess("تم تحديث صورة الملف الشخصي");
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (e: any) {
+      setError(e.message ?? "فشل رفع الصورة");
+    }
+    setUploadingAvatar(false);
+  }
 
   async function saveProfile() {
     setSaving(true); setSuccess(""); setError("");
@@ -106,15 +125,31 @@ export default function DoctorProfilePage() {
               <rect width="100%" height="100%" fill="url(#dots)" />
             </svg>
             <div className="relative z-10 flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black text-white bg-white/20 border border-white/30 shadow-inner shrink-0">
-                {(profile?.full_name ?? user.full_name).charAt(0)}
+              {/* Avatar with upload button */}
+              <div className="relative shrink-0 group cursor-pointer" onClick={() => avatarInputRef.current?.click()}>
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="صورة الملف الشخصي"
+                    className="w-16 h-16 rounded-2xl object-cover border-2 border-white/30 shadow-inner" />
+                ) : (
+                  <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black text-white bg-white/20 border border-white/30 shadow-inner">
+                    {(profile?.full_name ?? user.full_name).charAt(0)}
+                  </div>
+                )}
+                <div className="absolute inset-0 rounded-2xl bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  {uploadingAvatar
+                    ? <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    : <Camera size={18} className="text-white" strokeWidth={2} />}
+                </div>
               </div>
+              <input ref={avatarInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden"
+                onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadAvatar(f); e.target.value = ""; }} />
               <div>
                 <h2 className="text-xl font-extrabold text-white">د. {profile?.full_name ?? user.full_name}</h2>
                 <p className="text-violet-100 text-sm mt-0.5 flex items-center gap-1.5">
                   <Stethoscope size={12} strokeWidth={2} />
                   {profile?.specialization ?? "طبيب"}
                 </p>
+                <p className="text-violet-200/70 text-xs mt-1">اضغط على الصورة لتغييرها</p>
               </div>
             </div>
           </motion.div>

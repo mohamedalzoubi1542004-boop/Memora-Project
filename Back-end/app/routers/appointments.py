@@ -59,9 +59,14 @@ def request_appointment(
         doctor_id=data.doctor_id,
         scheduled_at=data.scheduled_at,
         notes=data.notes,
-        status=AppointmentStatus.pending,
+        status=AppointmentStatus.PENDING,
     )
     db.add(appt)
+
+    # Assign patient to doctor immediately at booking so doctor can see them
+    if patient.assigned_doctor_id is None:
+        patient.assigned_doctor_id = data.doctor_id
+
     db.commit()
     db.refresh(appt)
     return _build_out(appt, db)
@@ -104,7 +109,7 @@ def approve_appointment(
     if not appt:
         raise HTTPException(status_code=404, detail="Appointment not found")
 
-    appt.status = AppointmentStatus.approved
+    appt.status = AppointmentStatus.APPROVED
 
     # Auto-assign patient to this doctor on first appointment approval
     patient = db.query(Patient).filter(Patient.id == appt.patient_id).first()
@@ -137,7 +142,7 @@ def cancel_appointment(
     else:
         raise HTTPException(status_code=403, detail="Access denied")
 
-    appt.status = AppointmentStatus.cancelled
+    appt.status = AppointmentStatus.CANCELLED
     db.commit()
     db.refresh(appt)
     return _build_out(appt, db)
@@ -159,7 +164,7 @@ def complete_appointment(
     if not appt:
         raise HTTPException(status_code=404, detail="Appointment not found")
 
-    appt.status = AppointmentStatus.completed
+    appt.status = AppointmentStatus.COMPLETED
     db.commit()
     db.refresh(appt)
     return _build_out(appt, db)

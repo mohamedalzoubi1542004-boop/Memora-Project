@@ -33,6 +33,7 @@ class UserOut(BaseModel):
     role: str
     is_active: bool
     is_verified: bool
+    profile_image: str | None = None
 
     class Config:
         from_attributes = True

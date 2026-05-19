@@ -89,6 +89,9 @@ export const authApi = {
 
   changePassword: (current_password: string, new_password: string) =>
     api.post("/auth/change-password", { current_password, new_password }),
+
+  uploadAvatar: (form: FormData) =>
+    api.upload<{ profile_image?: string }>("/auth/me/avatar", form),
 };
 
 /* ─── Verification & Password Reset ─── */

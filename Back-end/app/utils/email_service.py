@@ -94,7 +94,7 @@ def _send_via_resend(to_email: str, code: str, purpose: str) -> None:
 # ── SMTP (Gmail / any SMTP server) ────────────────────────────────────────
 
 async def _send_via_smtp(to_email: str, code: str, purpose: str) -> None:
-    """Send via smtplib — works with Gmail App Password, no extra packages needed."""
+    """Send via smtplib — works with Gmail App Password on port 465 (SSL)."""
     import smtplib
     import ssl
     from email.mime.multipart import MIMEMultipart
@@ -109,9 +109,7 @@ async def _send_via_smtp(to_email: str, code: str, purpose: str) -> None:
     msg.attach(MIMEText(html, "html", "utf-8"))
 
     ctx = ssl.create_default_context()
-    with smtplib.SMTP(settings.MAIL_SERVER, settings.MAIL_PORT) as server:
-        server.ehlo()
-        server.starttls(context=ctx)
+    with smtplib.SMTP_SSL(settings.MAIL_SERVER, settings.MAIL_PORT, context=ctx) as server:
         server.login(settings.MAIL_USERNAME, settings.MAIL_PASSWORD)
         server.sendmail(settings.MAIL_USERNAME, to_email, msg.as_string())
 

@@ -25,7 +25,7 @@ export default function LoginPage() {
     try {
       await login(email, password);
       const stored = JSON.parse(localStorage.getItem("memora_user") || "{}");
-      router.push(roleDashboard(stored.role ?? "patient"));
+      router.replace(roleDashboard(stored.role ?? "patient"));
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "حدث خطأ — حاول مجدداً");
     } finally {
@@ -55,28 +55,10 @@ export default function LoginPage() {
           className="relative z-10 text-center"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/logo.png" alt="Memora" className="h-16 w-auto object-contain mx-auto mb-8 brightness-0 invert" />
-          <p className="text-xl text-blue-100 max-w-sm leading-relaxed">
+          <img src="/images/logo.png" alt="Memora" className="h-20 w-auto object-contain mx-auto mb-8 brightness-0 invert" />
+          <p className="text-2xl text-blue-100 max-w-sm leading-relaxed">
             منصة طبية ذكية للكشف المبكر عن الزهايمر وإدارة رعاية المرضى
           </p>
-          <div className="mt-12 grid grid-cols-3 gap-4 text-center">
-            {[
-              { label: "دقة التشخيص", value: "97%" },
-              { label: "مريض مسجّل",  value: "2,400+" },
-              { label: "طبيب متخصص", value: "180+" },
-            ].map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 + i * 0.1 }}
-                className="p-4 rounded-2xl bg-white/15 backdrop-blur border border-white/20"
-              >
-                <div className="text-2xl font-black text-white">{stat.value}</div>
-                <div className="text-sm text-blue-100 mt-1">{stat.label}</div>
-              </motion.div>
-            ))}
-          </div>
         </motion.div>
       </div>
 

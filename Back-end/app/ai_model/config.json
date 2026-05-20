@@ -1,6 +1,6 @@
 {
-  "img_size": 456,
+  "img_size": 528,
   "class_names": ["MildDemented", "ModerateDemented", "NonDemented"],
-  "model_filename": "model.h5",
+  "model_filename": "efficientnetb6_final",
   "temperature_filename": "temperature_T.json"
 }

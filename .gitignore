@@ -20,6 +20,7 @@ Back-end/uploads/
 Back-end/reports/
 Back-end/app/ai_model/model.h5
 Back-end/app/ai_model/temperature_T.json
+Back-end/app/ai_model/efficientnetb6_final/
 Back-end/.pytest_cache/
 Back-end/cd
 Back-end/py

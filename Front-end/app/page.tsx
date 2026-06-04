@@ -6,7 +6,7 @@ import {
   BrainCircuit, Menu, X, Upload, Cpu, Microscope,
   BarChart3, Shield, Activity, Building2, Phone, Mail,
   ArrowLeft, Plus, Minus, MessageCircle, Clock,
-  Zap, CheckCircle, Calendar, Brain, Users, BookOpen,
+  Zap, CheckCircle, Brain, Users, BookOpen,
   Gamepad2, Layers, Grid3X3, ListOrdered,
 } from "lucide-react";
 import Link from "next/link";
@@ -15,60 +15,55 @@ import Link from "next/link";
    DATA
    ═══════════════════════════════════════ */
 const stats = [
-  { value: "15-20", label: "نافذة الكشف المبكر", description: "سنة قبل الأعراض السريرية", icon: Clock, color: "cyan" },
-  { value: "3 محاور", label: "تحليل تشريحي دقيق", description: "محوري • إكليلي • سهمي", icon: Brain, color: "amber" },
-  { value: "98%", label: "دقة الخوارزميات", description: "في تصنيف مراحل الضمور", icon: Activity, color: "cyan" },
-  { value: "+55M", label: "حالة حول العالم", description: "يعانون من مرض الزهايمر", icon: Users, color: "amber" },
+  { value: "99.91%", label: "دقة التشخيص", description: "في تصنيف مراحل الزهايمر من صور الرنين", icon: Activity, color: "cyan" },
+  { value: "3", label: "مراحل تشخيصية", description: "سليم • خرف خفيف • خرف متوسط", icon: Brain, color: "amber" },
+  { value: "ثوانٍ", label: "وقت التحليل", description: "من رفع الصورة حتى ظهور النتيجة", icon: Clock, color: "cyan" },
+  { value: "+55M", label: "مصاب حول العالم", description: "يعانون من مرض الزهايمر", icon: Users, color: "amber" },
 ];
 
 const features = [
   {
     icon: Microscope,
-    title: "تحليل الضمور البنيوي",
-    description: "قياس دقيق لحجم المنطقة الحصينية والفص الصدغي مع مقارنة بقواعد بيانات عمرية معتمدة.",
+    title: "تحليل صور الرنين المغناطيسي",
+    description: "يرفع الطبيب صورة الرنين المغناطيسي للدماغ ويحللها النظام فورياً بذكاء اصطناعي مدرَّب خصيصاً للكشف عن علامات الزهايمر.",
     highlight: false,
   },
   {
     icon: Cpu,
-    title: "التصنيف الآلي الذكي",
-    description: "تصنيف فوري وموثوق للحالة إلى: سليم إدراكياً (CN) أو ضعف إدراكي خفيف (MCI) أو زهايمر (AD).",
+    title: "تشخيص دقيق بنسبة 99.91%",
+    description: "يُصنّف النظام الحالة تلقائياً إلى ثلاث مراحل: غير مصاب، أو خرف خفيف، أو خرف متوسط — مع نسبة الثقة لكل نتيجة.",
     highlight: true,
   },
   {
     icon: BarChart3,
-    title: "تتبع التدهور الزمني",
-    description: "مقارنة الفحوصات الدورية لقياس معدل التغير البنيوي ورصد أي تسارع في الضمور.",
+    title: "متابعة الحالة عبر الزمن",
+    description: "يحتفظ النظام بسجل كامل لجميع فحوصات كل مريض، ويُمكّن الطبيب من مقارنة النتائج الدورية ورصد أي تطور في الحالة.",
     highlight: false,
   },
   {
     icon: Shield,
-    title: "دعم القرار السريري",
-    description: "تقارير طبية تفصيلية تشمل خرائط حرارية للمناطق المتأثرة وتوصيات للتدخل العلاجي المبكر.",
+    title: "تقرير طبي شامل بنقرة واحدة",
+    description: "يولّد النظام تقريراً طبياً PDF مفصلاً يشمل نتيجة التشخيص، ونتائج الاختبارات الإدراكية، وملاحظات الطبيب — جاهزاً للطباعة والأرشفة.",
     highlight: false,
   },
 ];
 
 const steps = [
-  { number: "01", icon: Brain, title: "فحص الرنين المغناطيسي", description: "يُجرى فحص MRI ثلاثي الأبعاد T1 للدماغ. هذا الفحص غير مؤلم تماماً ويستغرق 15-20 دقيقة.", color: "cyan" },
-  { number: "02", icon: Upload, title: "رفع الصور على المنصة", description: "يرفع الطبيب المتخصص صور الرنين بصيغة NIfTI أو DICOM مباشرة إلى منصة Memora الآمنة.", color: "amber" },
-  { number: "03", icon: Cpu, title: "التحليل بالذكاء الاصطناعي", description: "يحلل نظامنا 96 شريحة دماغية عبر المحاور الثلاثة مع التركيز على منطقة الحصين والفص الصدغي.", color: "cyan" },
-  { number: "04", icon: CheckCircle, title: "التدخل المبكر والرعاية", description: "يستلم الطبيب تقريراً تفصيلياً مع خطة متابعة مخصصة تمنح المريض وعائلته النافذة الذهبية.", color: "amber" },
+  { number: "01", icon: Brain, title: "فحص الرنين المغناطيسي", description: "يُجرى فحص MRI للدماغ للحصول على صور واضحة للأنسجة الدماغية. الفحص غير مؤلم ويستغرق دقائق معدودة.", color: "cyan" },
+  { number: "02", icon: Upload, title: "رفع الصورة على المنصة", description: "يرفع الطبيب صورة الرنين المغناطيسي مباشرةً إلى منصة Memora الآمنة — بسرعة وسهولة تامة.", color: "amber" },
+  { number: "03", icon: Cpu, title: "التحليل الفوري بالذكاء الاصطناعي", description: "يحلل النظام الصورة خلال ثوانٍ بدقة تشخيصية 99.91% ويُصدر نتيجة التصنيف مع نسبة الثقة.", color: "cyan" },
+  { number: "04", icon: CheckCircle, title: "النتيجة والتقرير الطبي", description: "يستلم الطبيب التشخيص الفوري — سليم أو خرف خفيف أو خرف متوسط — مع تقرير PDF شامل لدعم القرار الطبي.", color: "amber" },
 ];
 
 
 const faqs = [
-  { q: "ما مدى دقة تشخيص نظام Memora؟", a: "يحقق نظام Memora دقة تشخيصية تتجاوز 98% في تصنيف مراحل الضمور الدماغي (CN/MCI/AD)، مدعومة بالتحقق السريري على بيانات ADNI التي تضم أكثر من 3,182 فحص من 675 مريضاً." },
-  { q: "كم من الوقت يستغرق تحليل صور الرنين المغناطيسي؟", a: "يتم تحليل الصور خلال ثوانٍ معدودة بعد الرفع. يتضمن النظام معالجة 96 شريحة دماغية عبر المحاور الثلاثة (المحوري والإكليلي والسهمي) للحصول على صورة تشخيصية شاملة." },
-  { q: "هل يمكن للنظام اكتشاف الزهايمر قبل ظهور الأعراض الملحوظة؟", a: "نعم، هذه هي القيمة الجوهرية لـ Memora. التغيرات البنيوية في الحصين والفص الصدغي تبدأ قبل 15-20 عاماً من ظهور أي أعراض سريرية. نظامنا يرصد هذه التغيرات المبكرة جداً في مرحلة ما قبل السريرية." },
-  { q: "ما هو الضعف الإدراكي الخفيف (MCI) ولماذا هو مهم؟", a: "MCI هو مرحلة وسيطة بين الشيخوخة الطبيعية والزهايمر. إنها 'النافذة الذهبية' للتدخل العلاجي — فليس كل حالات MCI تتطور إلى زهايمر، وبالتدخل المناسب يمكن إبطاء التدهور بشكل كبير." },
-  { q: "هل البيانات الطبية للمريض محمية وآمنة؟", a: "يطبّق Memora تشفيراً شاملاً لجميع البيانات الطبية مع الالتزام الكامل بمعايير HIPAA الدولية. لا تُشارك بيانات المريض مع أي طرف ثالث." },
+  { q: "ما مدى دقة تشخيص نظام Memora؟", a: "يحقق نظام Memora دقة تشخيصية تبلغ 99.91% في تحليل صور الرنين المغناطيسي الدماغي وتصنيف مرحلة الزهايمر. هذه الدقة العالية تجعله أداةً موثوقة لدعم قرار الطبيب المتخصص." },
+  { q: "كم من الوقت يستغرق تحليل صورة الرنين المغناطيسي؟", a: "يتم التحليل خلال ثوانٍ معدودة من لحظة رفع الصورة. يُصدر النظام فوراً نتيجة التصنيف مع نسبة الثقة، مما يُوفّر على الطبيب وقتاً طويلاً ويُعجّل بالقرار الطبي." },
+  { q: "ما الفرق بين المراحل الثلاث التي يُشخّصها النظام؟", a: "يُصنّف النظام الحالة إلى ثلاث مراحل: غير مصاب — لا توجد علامات زهايمر في الصورة، أو خرف خفيف — مرحلة مبكرة يمكن التدخل فيها علاجياً وإبطاء تطورها، أو خرف متوسط — تستدعي متابعة مكثفة وخطة رعاية متخصصة للمريض وعائلته." },
+  { q: "هل يمكن للنظام متابعة تطور حالة المريض مع الوقت؟", a: "نعم، تحتفظ منصة Memora بالسجل الكامل لجميع فحوصات كل مريض. يستطيع الطبيب مقارنة الفحوصات الدورية لرصد أي تطور أو تحسن في الحالة، واتخاذ قرارات علاجية مبنية على معطيات موضوعية." },
+  { q: "هل البيانات الطبية للمريض محمية وآمنة؟", a: "تضمن منصة Memora سرية تامة لجميع البيانات الطبية. كل مستخدم — طبيب أو مريض أو أسرة — لا يرى إلا ما يخصه تحديداً. لا تُشارك أي بيانات مع أي طرف ثالث." },
 ];
 
-const blogPosts = [
-  { title: "لويحات الأميلويد: العدو الصامت الذي يبدأ قبل عقود", category: "علم الأعصاب", date: "15 مارس 2026", author: "د. سارة الخالدي", bg: "from-cyan-100 to-blue-50" },
-  { title: "الحصين: لماذا هو أول ضحايا الزهايمر؟", category: "تشريح الدماغ", date: "22 مارس 2026", author: "د. فاطمة الزهراني", bg: "from-amber-50 to-yellow-50" },
-  { title: "MCI: النافذة الذهبية للتدخل قبل فوات الأوان", category: "التشخيص المبكر", date: "1 أبريل 2026", author: "د. محمد العلي", bg: "from-purple-50 to-violet-50" },
-];
 
 
 /* ═══════════════════════════════════════
@@ -218,7 +213,7 @@ function HeroSection() {
 
           {/* Subtitle */}
           <p className="text-lg md:text-xl text-slate-500 mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0">
-            نحمي ذكرياتك قبل أن تتلاشى. تحليل دقيق لصور الرنين المغناطيسي لاكتشاف التغيرات الدماغية قبل ظهور الأعراض بسنوات.
+            نحمي ذكرياتك قبل أن تتلاشى. تحليل دقيق بنسبة 99.91% لصور الرنين المغناطيسي للكشف عن الزهايمر في مراحله المبكرة قبل ظهور الأعراض.
           </p>
 
           {/* CTAs */}
@@ -279,8 +274,8 @@ function HeroSection() {
                 <Activity size={20} />
               </div>
               <div>
-                <p className="text-xs text-slate-500 font-medium tracking-wide">دقة التشخيص</p>
-                <p className="text-sm font-extrabold text-slate-900">98% دقة</p>
+                <p className="text-xs text-slate-500 font-medium tracking-wide">دقة النموذج</p>
+                <p className="text-sm font-extrabold text-slate-900">99.91% دقة</p>
               </div>
             </div>
 
@@ -350,7 +345,7 @@ function FeaturesSection() {
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-50/60 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-amber-50/60 rounded-full blur-[80px] translate-y-1/3 -translate-x-1/3 pointer-events-none" />
       <div className="container mx-auto px-4 relative z-10">
-        <SectionHeader label="Technology" title="التكنولوجيا التي تحمي الذاكرة" subtitle="أربعة محاور تقنية متكاملة لتحليل دقيق وشامل للتغيرات الدماغية" icon={Zap} inView={inView} />
+        <SectionHeader label="Technology" title="التكنولوجيا التي تحمي الذاكرة" subtitle="ذكاء اصطناعي بدقة 99.91% — أربعة محاور لرعاية متكاملة للمريض وعائلته" icon={Zap} inView={inView} />
         <motion.div initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ duration: 0.5, delay: 0.3 }} className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
           {features.map((feat, i) => {
             const Icon = feat.icon;
@@ -364,10 +359,10 @@ function FeaturesSection() {
                   <h3 className="text-2xl font-bold text-gray-900 group-hover:text-white transition-colors duration-300">{feat.title}</h3>
                   <p className="text-base leading-relaxed text-gray-500 group-hover:text-cyan-100 transition-colors duration-300">{feat.description}</p>
                 </div>
-                <a href="#how-it-works" className="mt-auto pt-4 flex items-center gap-2 text-sm font-bold cursor-pointer w-fit text-cyan-600 group-hover:text-white transition-colors duration-300">
+                <Link href="/register" className="mt-auto pt-4 flex items-center gap-2 text-sm font-bold cursor-pointer w-fit text-cyan-600 group-hover:text-white transition-colors duration-300">
                   <span>اكتشف المزيد</span>
                   <ArrowLeft size={16} className="transition-transform duration-300 group-hover:-translate-x-2" />
-                </a>
+                </Link>
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-0 group-hover:opacity-0 transition-opacity duration-500 rounded-t-[2rem]" />
               </motion.div>
             );
@@ -388,7 +383,7 @@ function HowItWorksSection() {
     <section id="how-it-works" className="py-20 md:py-28 bg-white relative overflow-hidden" ref={ref}>
       <div className="absolute inset-0 opacity-[0.025] bg-[radial-gradient(#06B6D4_1px,transparent_1px)] [background-size:20px_20px]" />
       <div className="container mx-auto px-4 relative z-10">
-        <SectionHeader label="رحلة التشخيص" title="أربع خطوات نحو التشخيص المبكر" subtitle="آلية شفافة وسريعة تمنح الطبيب والمريض صورة واضحة خلال دقائق" icon={CheckCircle} inView={inView} />
+        <SectionHeader label="رحلة التشخيص" title="أربع خطوات نحو التشخيص المبكر" subtitle="من صورة الرنين المغناطيسي إلى تقرير طبي شامل — كل شيء يتم خلال ثوانٍ معدودة" icon={CheckCircle} inView={inView} />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mt-12 md:mt-16">
           {steps.map((step, i) => {
             const Icon = step.icon;
@@ -483,12 +478,10 @@ function PartnerCTASection() {
             انضم إلى شبكتنا لإنقاذ الذاكرة. قدّم لمرضاك أحدث تكنولوجيا تشخيص الزهايمر المبكر وكن جزءاً من ثورة الرعاية العصبية الرقمية.
           </motion.p>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.5 }}>
-            <a href="#">
-              <button className="inline-flex items-center gap-3 px-8 md:px-12 py-4 text-base font-bold text-cyan-600 bg-white hover:bg-slate-50 rounded-xl shadow-2xl transition-all duration-300 hover:scale-105 group">
-                <span>سجّل مركزك الآن</span>
-                <ArrowLeft size={22} className="group-hover:-translate-x-1 transition-transform duration-300" />
-              </button>
-            </a>
+            <Link href="/register" className="inline-flex items-center gap-3 px-8 md:px-12 py-4 text-base font-bold text-cyan-600 bg-white hover:bg-slate-50 rounded-xl shadow-2xl transition-all duration-300 hover:scale-105 group">
+              <span>سجّل مركزك الآن</span>
+              <ArrowLeft size={22} className="group-hover:-translate-x-1 transition-transform duration-300" />
+            </Link>
           </motion.div>
         </motion.div>
       </div>
@@ -496,48 +489,6 @@ function PartnerCTASection() {
   );
 }
 
-/* ═══════════════════════════════════════
-   BLOG SECTION
-   ═══════════════════════════════════════ */
-function BlogSection() {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
-  return (
-    <section className="py-16 bg-cyan-50" ref={ref}>
-      <div className="container mx-auto px-4">
-        <SectionHeader label="المدونة الطبية" title="آخر المقالات العلمية" subtitle="محتوى طبي موثوق عن الزهايمر والصحة العصبية" icon={BookOpen} inView={inView} />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-          {blogPosts.map((post, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6, delay: 0.1 + i * 0.15 }}
-              className="group h-full bg-white rounded-[2rem] border border-gray-100 overflow-hidden hover:shadow-xl hover:shadow-cyan-100/40 transition-all duration-300 flex flex-col">
-              <div className={`relative h-48 overflow-hidden bg-gradient-to-br ${post.bg} flex items-center justify-center`}>
-                <BrainCircuit size={72} className="text-cyan-300 opacity-40 group-hover:scale-110 transition-transform duration-700" />
-                <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-cyan-600 shadow-sm">{post.category}</div>
-              </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <div className="flex items-center gap-4 text-xs text-gray-400 mb-3">
-                  <div className="flex items-center gap-1.5"><Calendar size={12} /><span>{post.date}</span></div>
-                  <span>{post.author}</span>
-                </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-3 line-clamp-2 leading-tight group-hover:text-cyan-600 transition-colors">{post.title}</h3>
-                <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-cyan-100 flex items-center justify-center text-xs font-bold text-cyan-700">{post.author.charAt(3)}</div>
-                    <span className="text-xs font-bold text-slate-700">{post.author}</span>
-                  </div>
-                  <button className="text-sm font-bold text-cyan-600 flex items-center gap-1 group/btn">
-                    <span>اقرأ</span>
-                    <ArrowLeft size={14} className="transition-transform duration-300 group-hover/btn:-translate-x-1" />
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 /* ═══════════════════════════════════════
    REVIEWS SECTION
@@ -688,25 +639,6 @@ function Footer() {
 }
 
 /* ═══════════════════════════════════════
-   FLOATING CHAT
-   ═══════════════════════════════════════ */
-function FloatingChat() {
-  return (
-    <button className="fixed bottom-6 right-6 z-50 group">
-      <span className="absolute inset-0 rounded-full bg-cyan-400 opacity-75 animate-ping" />
-      <div className="relative flex items-center justify-center w-14 h-14 bg-gradient-to-tr from-cyan-700 to-cyan-500 text-white rounded-full shadow-xl shadow-cyan-500/40 border-2 border-white">
-        <MessageCircle size={26} strokeWidth={2.5} />
-        <span className="absolute top-0 right-0 flex h-3 w-3">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
-          <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500" />
-        </span>
-      </div>
-      <span className="absolute right-16 top-1/2 -translate-y-1/2 px-3 py-1 bg-slate-900 text-white text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">مساعد الزهايمر الذكي</span>
-    </button>
-  );
-}
-
-/* ═══════════════════════════════════════
    MAIN EXPORT
    ═══════════════════════════════════════ */
 export default function MemoraPage() {
@@ -731,10 +663,8 @@ export default function MemoraPage() {
         <HowItWorksSection />
         <FaqSection openFaq={openFaq} setOpenFaq={setOpenFaq} />
         <PartnerCTASection />
-        <BlogSection />
       </main>
       <Footer />
-      <FloatingChat />
     </div>
   );
 }

@@ -31,7 +31,8 @@ export default function PatientProfilePage() {
   const [dob, setDob]                           = useState("");
   const [gender, setGender]                     = useState("");
   const [bloodType, setBloodType]               = useState("");
-  const [emergencyContact, setEmergencyContact] = useState("");
+  const [emergencyName, setEmergencyName]       = useState("");
+  const [emergencyPhone, setEmergencyPhone]     = useState("");
   const [medicalHistory, setMedicalHistory]     = useState("");
   const [allergies, setAllergies]               = useState("");
   const [medications, setMedications]           = useState("");
@@ -44,7 +45,8 @@ export default function PatientProfilePage() {
       setDob(p.date_of_birth ?? "");
       setGender(p.gender ?? "");
       setBloodType(p.blood_type ?? "");
-      setEmergencyContact(p.emergency_contact ?? "");
+      setEmergencyName(p.emergency_contact_name ?? "");
+      setEmergencyPhone(p.emergency_contact_phone ?? "");
       setMedicalHistory(p.medical_history ?? "");
       setAllergies(p.allergies ?? "");
       setMedications(p.medications ?? "");
@@ -58,7 +60,8 @@ export default function PatientProfilePage() {
         date_of_birth: dob || null,
         gender: gender || null,
         blood_type: bloodType || null,
-        emergency_contact: emergencyContact || null,
+        emergency_contact_name: emergencyName || null,
+        emergency_contact_phone: emergencyPhone || null,
         medical_history: medicalHistory || null,
         allergies: allergies || null,
         medications: medications || null,
@@ -158,8 +161,12 @@ export default function PatientProfilePage() {
               {/* Emergency contact */}
               <div>
                 <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">جهة الاتصال في الطوارئ</label>
-                <input value={emergencyContact} onChange={(e) => setEmergencyContact(e.target.value)}
-                  placeholder="الاسم ورقم الهاتف..." className={fieldClass} />
+                <div className="grid grid-cols-2 gap-4">
+                  <input value={emergencyName} onChange={(e) => setEmergencyName(e.target.value)}
+                    placeholder="الاسم" className={fieldClass} />
+                  <input value={emergencyPhone} onChange={(e) => setEmergencyPhone(e.target.value)}
+                    type="tel" inputMode="tel" placeholder="رقم الهاتف" className={fieldClass} />
+                </div>
               </div>
 
               {/* Allergies */}

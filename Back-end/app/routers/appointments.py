@@ -44,15 +44,36 @@ def request_appointment(
     db: Session = Depends(get_db),
 ):
     if current_user.role != UserRole.PATIENT:
-        raise HTTPException(status_code=403, detail="Patients only")
+        raise HTTPException(status_code=403, detail="المرضى فقط")
 
     patient = db.query(Patient).filter(Patient.user_id == current_user.id).first()
     if not patient:
-        raise HTTPException(status_code=404, detail="Patient profile not found")
+        raise HTTPException(status_code=404, detail="لم يُعثر على ملف المريض")
 
     doctor = db.query(Doctor).filter(Doctor.id == data.doctor_id, Doctor.is_approved == True).first()
     if not doctor:
-        raise HTTPException(status_code=404, detail="Doctor not found or not approved")
+        raise HTTPException(status_code=404, detail="الطبيب غير موجود أو لم يُوافق على حسابه بعد")
+
+    # A patient already under another doctor must unassign before booking elsewhere
+    if patient.assigned_doctor_id is not None and patient.assigned_doctor_id != data.doctor_id:
+        raise HTTPException(
+            status_code=403,
+            detail="أنت مسجّل حالياً تحت إشراف طبيب آخر — ألغِ ارتباطك به أولاً",
+        )
+
+    # The appointment must be in the future
+    now = datetime.now(data.scheduled_at.tzinfo)
+    if data.scheduled_at <= now:
+        raise HTTPException(status_code=422, detail="لا يمكن حجز موعد في وقت ماضٍ")
+
+    # Reject a clashing slot — the doctor already has an active appointment then
+    clash = db.query(Appointment).filter(
+        Appointment.doctor_id == data.doctor_id,
+        Appointment.scheduled_at == data.scheduled_at,
+        Appointment.status.in_([AppointmentStatus.PENDING, AppointmentStatus.APPROVED]),
+    ).first()
+    if clash:
+        raise HTTPException(status_code=409, detail="هذا الموعد محجوز مسبقاً — اختر وقتاً آخر")
 
     appt = Appointment(
         patient_id=patient.id,
@@ -62,11 +83,8 @@ def request_appointment(
         status=AppointmentStatus.PENDING,
     )
     db.add(appt)
-
-    # Assign patient to doctor immediately at booking so doctor can see them
-    if patient.assigned_doctor_id is None:
-        patient.assigned_doctor_id = data.doctor_id
-
+    # NOTE: assignment to the doctor happens on approval, not on request —
+    # a pending request is not yet a care relationship.
     db.commit()
     db.refresh(appt)
     return _build_out(appt, db)
@@ -88,7 +106,7 @@ def my_appointments(
             return []
         appts = db.query(Appointment).filter(Appointment.doctor_id == doctor.id).all()
     else:
-        raise HTTPException(status_code=403, detail="Access denied")
+        raise HTTPException(status_code=403, detail="غير مصرح بالوصول")
 
     return [_build_out(a, db) for a in appts]
 
@@ -100,18 +118,20 @@ def approve_appointment(
     db: Session = Depends(get_db),
 ):
     if current_user.role != UserRole.DOCTOR:
-        raise HTTPException(status_code=403, detail="Doctors only")
+        raise HTTPException(status_code=403, detail="الأطباء فقط")
 
     doctor = db.query(Doctor).filter(Doctor.user_id == current_user.id).first()
     appt = db.query(Appointment).filter(
         Appointment.id == appt_id, Appointment.doctor_id == doctor.id
     ).first()
     if not appt:
-        raise HTTPException(status_code=404, detail="Appointment not found")
+        raise HTTPException(status_code=404, detail="الموعد غير موجود")
+
+    if appt.status != AppointmentStatus.PENDING:
+        raise HTTPException(status_code=400, detail="لا يمكن اعتماد إلا موعد معلّق")
 
     appt.status = AppointmentStatus.APPROVED
-
-    # Auto-assign patient to this doctor on first appointment approval
+    # Approval establishes the care relationship — assign the patient if free
     patient = db.query(Patient).filter(Patient.id == appt.patient_id).first()
     if patient and patient.assigned_doctor_id is None:
         patient.assigned_doctor_id = doctor.id
@@ -129,18 +149,21 @@ def cancel_appointment(
 ):
     appt = db.query(Appointment).filter(Appointment.id == appt_id).first()
     if not appt:
-        raise HTTPException(status_code=404, detail="Appointment not found")
+        raise HTTPException(status_code=404, detail="الموعد غير موجود")
 
     if current_user.role == UserRole.PATIENT:
         patient = db.query(Patient).filter(Patient.user_id == current_user.id).first()
         if not patient or appt.patient_id != patient.id:
-            raise HTTPException(status_code=403, detail="Access denied")
+            raise HTTPException(status_code=403, detail="غير مصرح بالوصول")
     elif current_user.role == UserRole.DOCTOR:
         doctor = db.query(Doctor).filter(Doctor.user_id == current_user.id).first()
         if not doctor or appt.doctor_id != doctor.id:
-            raise HTTPException(status_code=403, detail="Access denied")
+            raise HTTPException(status_code=403, detail="غير مصرح بالوصول")
     else:
-        raise HTTPException(status_code=403, detail="Access denied")
+        raise HTTPException(status_code=403, detail="غير مصرح بالوصول")
+
+    if appt.status not in (AppointmentStatus.PENDING, AppointmentStatus.APPROVED):
+        raise HTTPException(status_code=400, detail="لا يمكن إلغاء موعد منتهٍ أو ملغى مسبقاً")
 
     appt.status = AppointmentStatus.CANCELLED
     db.commit()
@@ -155,14 +178,17 @@ def complete_appointment(
     db: Session = Depends(get_db),
 ):
     if current_user.role != UserRole.DOCTOR:
-        raise HTTPException(status_code=403, detail="Doctors only")
+        raise HTTPException(status_code=403, detail="الأطباء فقط")
 
     doctor = db.query(Doctor).filter(Doctor.user_id == current_user.id).first()
     appt = db.query(Appointment).filter(
         Appointment.id == appt_id, Appointment.doctor_id == doctor.id
     ).first()
     if not appt:
-        raise HTTPException(status_code=404, detail="Appointment not found")
+        raise HTTPException(status_code=404, detail="الموعد غير موجود")
+
+    if appt.status != AppointmentStatus.APPROVED:
+        raise HTTPException(status_code=400, detail="لا يمكن إكمال إلا موعد معتمد")
 
     appt.status = AppointmentStatus.COMPLETED
     db.commit()

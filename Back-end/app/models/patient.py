@@ -14,7 +14,8 @@ class Patient(Base):
     date_of_birth = Column(Date)
     gender = Column(String)        # male / female
     blood_type = Column(String)
-    emergency_contact = Column(String)
+    emergency_contact_name = Column(String)
+    emergency_contact_phone = Column(String)
     medical_history = Column(Text)
     allergies = Column(Text)         # comma-separated
     medications = Column(Text)       # current medications

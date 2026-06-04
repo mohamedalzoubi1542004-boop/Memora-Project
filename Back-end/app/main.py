@@ -7,6 +7,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
+from sqlalchemy import inspect, text
+
 from app.database import engine, Base
 from app.routers import (
     auth, games, patients, doctors, admin,
@@ -17,13 +19,68 @@ from app.routers import (
 from app.services.ai_service import ai_service
 
 
+# Ensure upload directories exist before the static mount is evaluated
+os.makedirs("uploads/avatars", exist_ok=True)
+os.makedirs("uploads/mri", exist_ok=True)
+os.makedirs("uploads/cvs", exist_ok=True)
+os.makedirs("reports", exist_ok=True)
+
+
+def _run_lightweight_migrations() -> None:
+    """Add columns / normalize data introduced after the DB was first created."""
+    inspector = inspect(engine)
+    tables = inspector.get_table_names()
+
+    if "doctors" in tables:
+        columns = {c["name"] for c in inspector.get_columns("doctors")}
+        if "rejection_reason" not in columns:
+            with engine.connect() as conn:
+                conn.execute(text("ALTER TABLE doctors ADD COLUMN rejection_reason VARCHAR"))
+                conn.commit()
+
+    # SQLAlchemy's Enum column stores the member NAME (uppercase). Older rows
+    # may hold lowercase values ('approved') which crash on deserialization.
+    if "appointments" in tables:
+        with engine.connect() as conn:
+            conn.execute(text(
+                "UPDATE appointments SET status = UPPER(status) WHERE status <> UPPER(status)"
+            ))
+            conn.commit()
+
+    # Diagnosis approval gate: new 'status' column. Diagnoses that existed
+    # before this column was added were already visible, so grandfather them
+    # as 'completed' — the pending gate only applies to new uploads.
+    if "diagnoses" in tables:
+        diag_columns = {c["name"] for c in inspector.get_columns("diagnoses")}
+        if "status" not in diag_columns:
+            with engine.connect() as conn:
+                conn.execute(text(
+                    "ALTER TABLE diagnoses ADD COLUMN status VARCHAR DEFAULT 'pending'"
+                ))
+                conn.execute(text("UPDATE diagnoses SET status = 'completed'"))
+                conn.commit()
+
+    # Emergency contact split into separate name + phone columns
+    if "patients" in tables:
+        pcols = {c["name"] for c in inspector.get_columns("patients")}
+        if "emergency_contact_name" not in pcols:
+            with engine.connect() as conn:
+                conn.execute(text("ALTER TABLE patients ADD COLUMN emergency_contact_name VARCHAR"))
+                conn.execute(text("ALTER TABLE patients ADD COLUMN emergency_contact_phone VARCHAR"))
+                # Carry the old single free-text field over into the name column
+                if "emergency_contact" in pcols:
+                    conn.execute(text(
+                        "UPDATE patients SET emergency_contact_name = emergency_contact "
+                        "WHERE emergency_contact IS NOT NULL AND emergency_contact <> ''"
+                    ))
+                conn.commit()
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup: create tables + load AI model
     Base.metadata.create_all(bind=engine)
-    os.makedirs("uploads", exist_ok=True)
-    os.makedirs("uploads/mri", exist_ok=True)
-    os.makedirs("reports", exist_ok=True)
+    _run_lightweight_migrations()
     ai_service.load_model()
     yield
     # Shutdown: nothing to clean up
@@ -63,11 +120,13 @@ app.add_middleware(
 # ---------------------------------------------------------------------------
 # Static file mounts
 # ---------------------------------------------------------------------------
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-app.mount("/reports", StaticFiles(directory="reports"), name="reports")
+# Only avatars are public. MRI scans (uploads/mri) and doctor CVs (uploads/cvs,
+# uploads/cv_*) are sensitive and MUST be served via authenticated endpoints
+# (/diagnosis/{id}/image and /doctors/{id}/cv) — never as public static files.
+app.mount("/uploads/avatars", StaticFiles(directory="uploads/avatars"), name="avatars")
 
 # ---------------------------------------------------------------------------
-# Routers — all 14
+# Routers
 # ---------------------------------------------------------------------------
 app.include_router(auth.router)
 app.include_router(games.router)

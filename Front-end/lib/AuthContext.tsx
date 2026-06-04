@@ -8,7 +8,7 @@ import { authApi } from "./api";
 interface AuthContextValue {
   user: AuthUser | null;
   loading: boolean;
-  login:  (email: string, password: string) => Promise<void>;
+  login:  (email: string, password: string, rememberMe?: boolean) => Promise<void>;
   logout: () => void;
   refresh: () => Promise<void>;
 }
@@ -51,8 +51,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(false);
   }, []);
 
-  const login = useCallback(async (email: string, password: string) => {
-    const result = await authApi.login(email, password);
+  const login = useCallback(async (email: string, password: string, rememberMe = false) => {
+    const result = await authApi.login(email, password, rememberMe);
     const authUser: AuthUser = {
       user_id: result.user_id,
       full_name: result.full_name,
@@ -67,7 +67,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(() => {
     clearAuth();
     setUser(null);
-    if (typeof window !== "undefined") window.location.href = "/login";
+    // replace() — not href= — so the now-inaccessible dashboard is removed from
+    // history; the browser Back button from /login then reaches the home page.
+    if (typeof window !== "undefined") window.location.replace("/login");
   }, []);
 
   return (

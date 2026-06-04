@@ -28,6 +28,18 @@ def get_current_user(
     user = db.query(User).filter(User.id == user_id, User.is_active == True).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="المستخدم غير موجود")
+
+    # For doctors: check approval/suspension on every request so revocation takes
+    # effect immediately without waiting for the JWT to expire.
+    if user.role == UserRole.DOCTOR:
+        from app.models.doctor import Doctor  # local import avoids circular deps
+        doctor = db.query(Doctor).filter(Doctor.user_id == user.id).first()
+        if doctor and doctor.is_suspended:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="حسابك موقوف — يرجى التواصل مع الإدارة",
+            )
+
     return user
 
 

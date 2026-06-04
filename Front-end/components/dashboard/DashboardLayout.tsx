@@ -2,7 +2,6 @@
 
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
-
 interface DashboardLayoutProps {
   title: string;
   children: React.ReactNode;

@@ -12,6 +12,7 @@ class DiagnosisOut(BaseModel):
     confidence: float
     probabilities: Optional[Dict[str, Any]] = None
     doctor_notes: Optional[str] = None
+    status: str = "pending"          # pending | completed
     created_at: datetime
 
     model_config = {"from_attributes": True}
@@ -19,6 +20,10 @@ class DiagnosisOut(BaseModel):
 
 class DiagnosisNotesUpdate(BaseModel):
     doctor_notes: str
+
+
+class DiagnosisApprove(BaseModel):
+    doctor_notes: Optional[str] = None
 
 
 class AIResult(BaseModel):

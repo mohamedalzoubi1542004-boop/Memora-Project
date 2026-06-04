@@ -7,7 +7,8 @@ class PatientProfileUpdate(BaseModel):
     date_of_birth: Optional[date] = None
     gender: Optional[str] = None
     blood_type: Optional[str] = None
-    emergency_contact: Optional[str] = None
+    emergency_contact_name: Optional[str] = None
+    emergency_contact_phone: Optional[str] = None
     medical_history: Optional[str] = None
     allergies: Optional[str] = None
     medications: Optional[str] = None
@@ -19,7 +20,8 @@ class PatientOut(BaseModel):
     date_of_birth: Optional[date] = None
     gender: Optional[str] = None
     blood_type: Optional[str] = None
-    emergency_contact: Optional[str] = None
+    emergency_contact_name: Optional[str] = None
+    emergency_contact_phone: Optional[str] = None
     medical_history: Optional[str] = None
     allergies: Optional[str] = None
     medications: Optional[str] = None

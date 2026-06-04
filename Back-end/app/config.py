@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
 
-    # File storage
+    # مسار الرفع الصور والتقارير 
     UPLOAD_DIR: str = "./uploads"
     REPORTS_DIR: str = "./reports"
 

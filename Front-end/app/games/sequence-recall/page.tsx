@@ -29,6 +29,7 @@ export default function SequenceRecallGame() {
   const [lives, setLives] = useState(3);
   const [seqLen, setSeqLen] = useState(3);
   const [inputLength, setInputLength] = useState(0);
+  const [introPhase, setIntroPhase] = useState(true);
   const [result, setResult] = useState<ReturnType<typeof useGameSession>["result"]>(null);
 
   const session = useGameSession({
@@ -45,11 +46,13 @@ export default function SequenceRecallGame() {
     setUserInput([]);
     setShowingIdx(-1);
     setInputLength(0);
+    setIntroPhase(true);
     setPhase("showing");
 
     let i = 0;
     const show = () => {
       if (i < seq.length) {
+        if (i === 0) setIntroPhase(false);   // intro shows once, then gaps show dots
         setShowingIdx(i);
         i++;
         setTimeout(() => {
@@ -170,8 +173,8 @@ export default function SequenceRecallGame() {
         </div>
 
         {/* Display area */}
-        <div className="w-40 h-40 rounded-3xl bg-white border-2 border-gray-100 flex items-center justify-center shadow-xl shadow-gray-200/50">
-          <AnimatePresence mode="wait">
+        <div className="relative w-40 h-40 rounded-3xl bg-white border-2 border-gray-100 overflow-hidden shadow-xl shadow-gray-200/50">
+          <AnimatePresence>
             {showingIdx >= 0 ? (
               <motion.span
                 key={showingIdx}
@@ -179,7 +182,7 @@ export default function SequenceRecallGame() {
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 1.5, opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className="text-6xl font-black text-blue-600"
+                className="absolute inset-0 flex items-center justify-center text-6xl font-black text-blue-600"
               >
                 {sequence[showingIdx]}
               </motion.span>
@@ -188,10 +191,12 @@ export default function SequenceRecallGame() {
                 key="idle"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-slate-300 text-2xl font-bold text-center leading-tight"
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                className="absolute inset-0 flex items-center justify-center text-slate-300 text-2xl font-bold text-center leading-tight"
               >
                 {phase === "showing"
-                  ? (inputLength === 0
+                  ? (introPhase
                       ? <span className="flex flex-col items-center gap-1"><span className="text-base text-slate-400 font-bold">{sequence.length} أرقام</span><span className="text-sm text-slate-300">انتبه!</span></span>
                       : "•••")
                   : phase === "input" ? "أدخل"
@@ -253,21 +258,13 @@ export default function SequenceRecallGame() {
               </div>
             )}
             {cfg.maxRange <= 9 && (
-              <>
-                <button
-                  onClick={handleDelete}
-                  className="h-14 rounded-2xl bg-white hover:bg-red-50 border border-gray-200 hover:border-red-200 text-slate-500 flex items-center justify-center active:scale-95 transition-all shadow-sm"
-                >
-                  <Delete size={22} />
-                </button>
-                <button
-                  onClick={() => handleInput("0")}
-                  className="h-14 rounded-2xl bg-white hover:bg-blue-50 border border-gray-200 hover:border-blue-300 text-slate-800 text-2xl font-black active:scale-95 transition-all shadow-sm"
-                >
-                  0
-                </button>
-                <div />
-              </>
+              <button
+                onClick={handleDelete}
+                className="col-span-3 h-14 rounded-2xl bg-white hover:bg-red-50 border border-gray-200 hover:border-red-200 text-slate-500 flex items-center justify-center gap-2 active:scale-95 transition-all shadow-sm"
+              >
+                <Delete size={20} />
+                <span className="text-sm font-bold">حذف آخر رقم</span>
+              </button>
             )}
           </div>
         )}

@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Brain, Activity, Calendar, Smile, Meh, Frown, ChevronLeft, Gamepad2, BookOpen, Stethoscope, Lightbulb } from "lucide-react";
+import { Brain, Activity, Calendar, Smile, Meh, Frown, ChevronLeft, Gamepad2, BookOpen, Stethoscope, Lightbulb, Users, Plus, Trash2, Clock } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
-import { checkinApi, mmseApi, symptomApi, appointmentApi, patientApi, diagnosisApi, gameApi } from "@/lib/api";
+import { checkinApi, mmseApi, symptomApi, appointmentApi, patientApi, diagnosisApi, gameApi, familyApi } from "@/lib/api";
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 24 },
@@ -22,7 +22,6 @@ const MOOD_OPTIONS = [
 
 const QUICK_ACTIONS = [
   { href: "/dashboard/patient/mmse",         label: "اختبار MMSE",      desc: "اختبر ذاكرتك الإدراكية",    Icon: Brain,      gradient: "from-blue-600 to-cyan-500",    shadow: "shadow-blue-500/30" },
-  { href: "/dashboard/patient/symptoms",     label: "تسجيل الأعراض",   desc: "استبيان الأعراض الدورية",   Icon: Activity,   gradient: "from-violet-600 to-purple-500", shadow: "shadow-violet-500/30" },
   { href: "/dashboard/patient/games",        label: "الألعاب المعرفية", desc: "تحديات ذهنية تفاعلية",      Icon: Gamepad2,   gradient: "from-emerald-500 to-teal-500",  shadow: "shadow-emerald-500/30" },
   { href: "/dashboard/patient/appointments", label: "حجز موعد",         desc: "تواصل مع طبيبك",             Icon: Calendar,   gradient: "from-amber-500 to-orange-400",  shadow: "shadow-amber-500/30" },
 ];
@@ -45,6 +44,14 @@ export default function PatientDashboard() {
   const [timeline, setTimeline] = useState<{ type: string; label: string; sub: string; date: Date; color: string }[]>([]);
   const [gameStat, setGameStat] = useState<{ avg: number | null; thisWeek: number }>({ avg: null, thisWeek: 0 });
 
+  const [pendingDiag, setPendingDiag]   = useState(0);
+  const [myPatientId, setMyPatientId]   = useState<number | null>(null);
+  const [contacts, setContacts]         = useState<any[]>([]);
+  const [showAddContact, setShowAddContact] = useState(false);
+  const [contactForm, setContactForm]   = useState({ name: "", email: "", phone: "", relation_type: "son" });
+  const [addingContact, setAddingContact] = useState(false);
+  const [contactError, setContactError] = useState("");
+
   useEffect(() => {
     if (!user) return;
     (async () => {
@@ -52,6 +59,9 @@ export default function PatientDashboard() {
         const [p, today] = await Promise.all([patientApi.me(), checkinApi.today()]);
         if (today) { setTodayCheckin(today as any); setMoodDone(true); }
         const pat = p as any;
+        setMyPatientId(pat.id);
+        familyApi.contacts(pat.id).then((c) => setContacts(c as any[])).catch(() => {});
+        diagnosisApi.myPendingCount().then((r) => setPendingDiag(r.pending)).catch(() => {});
         const [m, s, appts, mmseHist, sympHist, diagHist, gameHist] = await Promise.all([
           mmseApi.latest(pat.id).catch(() => null),
           symptomApi.latest(pat.id).catch(() => null),
@@ -85,6 +95,30 @@ export default function PatientDashboard() {
       } catch {}
     })();
   }, [user]);
+
+  const RELATION_LABELS: Record<string, string> = {
+    son: "ابن", daughter: "ابنة", father: "أب", mother: "أم",
+    brother: "أخ", sister: "أخت", spouse: "زوج/زوجة", other: "أخرى",
+  };
+
+  async function addContact() {
+    if (!contactForm.name.trim() || !myPatientId) return;
+    setAddingContact(true); setContactError("");
+    try {
+      const res = await familyApi.addContact({ ...contactForm, patient_id: myPatientId });
+      setContacts((prev) => [...prev, res as any]);
+      setContactForm({ name: "", email: "", phone: "", relation_type: "son" });
+      setShowAddContact(false);
+    } catch (e: any) { setContactError(e.message ?? "حدث خطأ"); }
+    finally { setAddingContact(false); }
+  }
+
+  async function deleteContact(id: number) {
+    try {
+      await familyApi.deleteContact(id);
+      setContacts((prev) => prev.filter((c) => c.id !== id));
+    } catch {}
+  }
 
   async function submitMood(mood: string) {
     setSubmittingMood(true);
@@ -176,6 +210,23 @@ export default function PatientDashboard() {
               </div>
             </div>
           </motion.div>
+
+          {/* ── Pending diagnosis notice ── */}
+          {pendingDiag > 0 && (
+            <motion.div {...fadeUp(0.08)} className="flex items-center gap-3 rounded-2xl bg-amber-50 border border-amber-200 p-4">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-100 shrink-0">
+                <Clock size={18} className="text-amber-600" strokeWidth={2} />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-amber-800">
+                  {pendingDiag === 1 ? "نتيجة تشخيص قيد المراجعة" : `${pendingDiag} نتائج تشخيص قيد المراجعة`}
+                </div>
+                <div className="text-xs text-amber-700 mt-0.5">
+                  طبيبك يراجع نتيجتك الآن — ستظهر لك فور اعتمادها.
+                </div>
+              </div>
+            </motion.div>
+          )}
 
           {/* ── Stats row ── */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -317,6 +368,89 @@ export default function PatientDashboard() {
                   <span className="text-xs font-bold text-slate-700">{t.label}</span>
                 </Link>
               ))}
+            </div>
+          </motion.div>
+
+          {/* ── Family contacts ── */}
+          <motion.div {...fadeUp(0.78)}>
+            <div className="flex items-center justify-between mb-3 px-1">
+              <h3 className="text-slate-800 font-extrabold text-base flex items-center gap-2">
+                <Users size={16} className="text-blue-500" strokeWidth={2} />
+                جهات التواصل العائلية
+              </h3>
+              <button onClick={() => setShowAddContact((v) => !v)}
+                className="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 transition-colors px-3 py-1.5 rounded-lg hover:bg-blue-50">
+                <Plus size={14} strokeWidth={2.5} />
+                إضافة
+              </button>
+            </div>
+            <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-5 space-y-3">
+
+              {/* Add form */}
+              {showAddContact && (
+                <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <input value={contactForm.name} onChange={(e) => setContactForm((f) => ({ ...f, name: e.target.value }))}
+                      placeholder="الاسم *"
+                      className="px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-slate-900 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/10" />
+                    <select value={contactForm.relation_type} onChange={(e) => setContactForm((f) => ({ ...f, relation_type: e.target.value }))}
+                      className="px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-slate-900 text-sm outline-none focus:border-blue-400">
+                      {Object.entries(RELATION_LABELS).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                    </select>
+                    <input value={contactForm.email} onChange={(e) => setContactForm((f) => ({ ...f, email: e.target.value }))}
+                      placeholder="البريد الإلكتروني" type="email"
+                      className="px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-slate-900 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/10" />
+                    <input value={contactForm.phone} onChange={(e) => setContactForm((f) => ({ ...f, phone: e.target.value }))}
+                      placeholder="رقم الهاتف"
+                      className="px-3 py-2.5 rounded-xl border border-gray-200 bg-white text-slate-900 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/10" />
+                  </div>
+                  {contactError && <p className="text-red-600 text-xs font-medium">{contactError}</p>}
+                  <div className="flex gap-2">
+                    <button onClick={addContact} disabled={addingContact || !contactForm.name.trim()}
+                      className="px-5 py-2 rounded-xl font-bold text-white text-sm bg-gradient-to-l from-blue-600 to-cyan-500 hover:opacity-90 shadow-md shadow-blue-500/25 disabled:opacity-50 transition-all">
+                      {addingContact ? "جاري الإضافة..." : "إضافة"}
+                    </button>
+                    <button onClick={() => { setShowAddContact(false); setContactError(""); }}
+                      className="px-5 py-2 rounded-xl font-bold text-slate-600 text-sm bg-white border border-gray-200 hover:bg-gray-50 transition-all">
+                      إلغاء
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Contacts list */}
+              {contacts.length === 0 && !showAddContact ? (
+                <div className="text-center py-5">
+                  <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-blue-50 mx-auto mb-3">
+                    <Users size={18} className="text-blue-400" strokeWidth={1.5} />
+                  </div>
+                  <p className="text-slate-500 text-sm font-medium">لم يتم إضافة جهات تواصل بعد</p>
+                  <p className="text-slate-400 text-xs mt-1">أضف أفراد عائلتك ليتمكنوا من متابعة حالتك</p>
+                </div>
+              ) : (
+                contacts.map((c: any) => (
+                  <div key={c.id} className="flex items-center justify-between p-3 rounded-2xl bg-gray-50 border border-gray-100 group">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-gradient-to-br from-blue-500 to-cyan-500 text-white font-black text-sm shrink-0">
+                        {c.name?.charAt(0)}
+                      </div>
+                      <div>
+                        <div className="text-slate-900 font-bold text-sm">{c.name}</div>
+                        <div className="text-xs text-slate-400">
+                          {RELATION_LABELS[c.relation_type] ?? c.relation_type ?? "—"}
+                          {c.email ? ` · ${c.email}` : ""}
+                          {c.phone ? ` · ${c.phone}` : ""}
+                        </div>
+                      </div>
+                    </div>
+                    <button onClick={() => deleteContact(c.id)}
+                      className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100">
+                      <Trash2 size={13} strokeWidth={2} />
+                    </button>
+                  </div>
+                ))
+              )}
+
             </div>
           </motion.div>
 

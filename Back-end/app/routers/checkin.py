@@ -19,7 +19,7 @@ router = APIRouter(prefix="/checkin", tags=["checkin"])
 
 def _require_patient(current_user: User = Depends(get_current_user)) -> User:
     if current_user.role != UserRole.PATIENT:
-        raise HTTPException(status_code=403, detail="Patients only")
+        raise HTTPException(status_code=403, detail="المرضى فقط")
     return current_user
 
 
@@ -30,11 +30,11 @@ def submit_checkin(
     db: Session = Depends(get_db),
 ):
     if data.mood not in MOOD_CHOICES:
-        raise HTTPException(status_code=400, detail=f"mood must be one of {MOOD_CHOICES}")
+        raise HTTPException(status_code=400, detail=f"قيمة المزاج غير صالحة — المقبول: {MOOD_CHOICES}")
 
     patient = db.query(Patient).filter(Patient.user_id == current_user.id).first()
     if not patient:
-        raise HTTPException(status_code=404, detail="Patient profile not found")
+        raise HTTPException(status_code=404, detail="لم يُعثر على ملف المريض")
 
     today = date.today().isoformat()
     existing = (
@@ -85,7 +85,7 @@ def patient_checkins(
     db: Session = Depends(get_db),
 ):
     if current_user.role not in (UserRole.DOCTOR, UserRole.ADMIN):
-        raise HTTPException(status_code=403, detail="Access denied")
+        raise HTTPException(status_code=403, detail="غير مصرح بالوصول")
 
     records = (
         db.query(DailyCheckin)

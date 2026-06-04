@@ -78,6 +78,14 @@ body {
   color: #fff;
 }
 
+/* Hide the browser's native password-reveal / clear controls (Edge & IE).
+   The app provides its own custom show/hide eye button, so the native one
+   would otherwise appear as a duplicate second eye icon. */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
+
 /* ═══════════════════════════════════════════════
    SCROLLBAR
    ═══════════════════════════════════════════════ */

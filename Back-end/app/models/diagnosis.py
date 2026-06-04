@@ -19,6 +19,9 @@ class Diagnosis(Base):
     confidence = Column(Float, nullable=False)           # 0.0 – 1.0
     probabilities = Column(String)                       # JSON string of per-class probabilities
     doctor_notes = Column(String)
+    # pending  → AI result awaiting the doctor's review (hidden from the patient)
+    # completed → reviewed & approved by the doctor (visible to the patient)
+    status = Column(String, default="pending", nullable=False)
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

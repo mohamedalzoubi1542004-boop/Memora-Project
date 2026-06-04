@@ -18,6 +18,7 @@ class Doctor(Base):
     years_experience = Column(Integer)
     is_approved = Column(Boolean, default=False)   # admin must approve
     is_suspended = Column(Boolean, default=False)
+    rejection_reason = Column(String)              # set when admin rejects the account
 
     user = relationship("User", backref="doctor_profile")
     diagnoses = relationship("Diagnosis", back_populates="doctor")

@@ -1,11 +1,18 @@
 from datetime import datetime
-from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 
 
 class MessageCreate(BaseModel):
     receiver_id: int
-    content: str
+    content: str = Field(..., min_length=1, max_length=2000)
+
+    @field_validator("content")
+    @classmethod
+    def _content_not_blank(cls, v: str) -> str:
+        stripped = v.strip()
+        if not stripped:
+            raise ValueError("لا يمكن إرسال رسالة فارغة")
+        return stripped
 
 
 class MessageOut(BaseModel):

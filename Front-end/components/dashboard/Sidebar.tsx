@@ -47,7 +47,6 @@ const PATIENT_NAV: NavItem[] = [
   { href: "/dashboard/patient",              label: "الرئيسية",         icon: Home },
   { href: "/dashboard/patient/checkin",      label: "تسجيل يومي",       icon: Smile },
   { href: "/dashboard/patient/mmse",         label: "اختبار MMSE",      icon: Brain },
-  { href: "/dashboard/patient/symptoms",     label: "متابعة الأعراض",   icon: Activity },
   { href: "/dashboard/patient/games",        label: "الألعاب المعرفية", icon: Gamepad2 },
   { href: "/dashboard/patient/appointments", label: "المواعيد",         icon: Calendar },
   { href: "/dashboard/messages",             label: "الرسائل",          icon: MessageCircle },
@@ -65,9 +64,10 @@ const DOCTOR_NAV: NavItem[] = [
 ];
 
 const FAMILY_NAV: NavItem[] = [
-  { href: "/dashboard/family",         label: "الرئيسية",      icon: Home },
-  { href: "/dashboard/family/burnout", label: "تقييم الإجهاد", icon: Heart },
-  { href: "/dashboard/messages",       label: "الرسائل",       icon: MessageCircle },
+  { href: "/dashboard/family",          label: "الرئيسية",       icon: Home },
+  { href: "/dashboard/family/symptoms", label: "متابعة الأعراض", icon: Activity },
+  { href: "/dashboard/family/burnout",  label: "تقييم الإجهاد",  icon: Heart },
+  { href: "/dashboard/messages",        label: "الرسائل",        icon: MessageCircle },
 ];
 
 const ADMIN_NAV: NavItem[] = [

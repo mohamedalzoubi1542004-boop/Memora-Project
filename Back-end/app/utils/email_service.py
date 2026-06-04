@@ -64,8 +64,8 @@ _OTP_HTML = """<!DOCTYPE html>
 </html>"""
 
 
-def _build_html(code: str, purpose: str) -> tuple[str, str]:
-    """Return (subject, html) for the given purpose."""
+def _build_message(code: str, purpose: str) -> tuple[str, str, str]:
+    """Return (subject, plain_text, html) for the given purpose."""
     if purpose == "verify":
         title    = "تحقق من بريدك الإلكتروني"
         subtitle = "أدخل الرمز أدناه لتأكيد حسابك في منصة Memora"
@@ -74,7 +74,15 @@ def _build_html(code: str, purpose: str) -> tuple[str, str]:
         subtitle = "أدخل الرمز أدناه لإعادة تعيين كلمة مرورك"
 
     html = _OTP_HTML.format(title=title, subtitle=subtitle, code=code, minutes=10)
-    return "Memora — رمز التحقق", html
+    # A plain-text alternative is required for good inbox placement —
+    # HTML-only emails are heavily penalised by spam filters.
+    text = (
+        f"Memora\n\n{title}\n{subtitle}\n\n"
+        f"رمز التحقق: {code}\n"
+        f"صالح لمدة 10 دقائق فقط.\n\n"
+        f"إذا لم تطلب هذا الرمز، يمكنك تجاهل هذا البريد بأمان."
+    )
+    return "Memora — رمز التحقق", text, html
 
 
 # ── Resend (primary) ───────────────────────────────────────────────────────
@@ -82,12 +90,13 @@ def _build_html(code: str, purpose: str) -> tuple[str, str]:
 def _send_via_resend(to_email: str, code: str, purpose: str) -> None:
     import resend as _resend
     _resend.api_key = settings.RESEND_API_KEY
-    subject, html = _build_html(code, purpose)
+    subject, text, html = _build_message(code, purpose)
     _resend.Emails.send({
         "from":    settings.RESEND_FROM,
         "to":      [to_email],
         "subject": subject,
         "html":    html,
+        "text":    text,
     })
 
 
@@ -100,12 +109,16 @@ async def _send_via_smtp(to_email: str, code: str, purpose: str) -> None:
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
 
-    subject, html = _build_html(code, purpose)
+    subject, text, html = _build_message(code, purpose)
 
+    sender = settings.MAIL_FROM or settings.MAIL_USERNAME
     msg = MIMEMultipart("alternative")
-    msg["Subject"] = subject
-    msg["From"]    = f"Memora <{settings.MAIL_FROM or settings.MAIL_USERNAME}>"
-    msg["To"]      = to_email
+    msg["Subject"]  = subject
+    msg["From"]     = f"Memora <{sender}>"
+    msg["To"]       = to_email
+    msg["Reply-To"] = sender
+    # Order matters: plain-text first, HTML last (clients prefer the last part).
+    msg.attach(MIMEText(text, "plain", "utf-8"))
     msg.attach(MIMEText(html, "html", "utf-8"))
 
     ctx = ssl.create_default_context()

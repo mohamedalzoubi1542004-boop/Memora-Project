@@ -31,16 +31,17 @@ export default function DoctorDashboard() {
   useEffect(() => {
     if (!user || user.is_approved === false) return;
     (async () => {
-      try {
-        const [s, pts, appts] = await Promise.all([
-          doctorDashboardApi.stats(),
-          doctorDashboardApi.myPatients(),
-          appointmentApi.my(),
-        ]);
-        setStats(s as any);
-        setMyPatients(pts as any[]);
-        setPendingAppts((appts as any[]).filter((a: any) => a.status === "pending"));
-      } catch {}
+      // allSettled: a single failing endpoint must not blank the whole dashboard
+      const [s, pts, appts] = await Promise.allSettled([
+        doctorDashboardApi.stats(),
+        doctorDashboardApi.myPatients(),
+        appointmentApi.my(),
+      ]);
+      if (s.status === "fulfilled") setStats(s.value as any);
+      if (pts.status === "fulfilled") setMyPatients(pts.value as any[]);
+      if (appts.status === "fulfilled") {
+        setPendingAppts((appts.value as any[]).filter((a: any) => a.status === "pending"));
+      }
       setFetching(false);
     })();
   }, [user]);

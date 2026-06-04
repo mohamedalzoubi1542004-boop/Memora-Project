@@ -6,6 +6,7 @@ import { FileText, Download, Plus, Loader2 } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { reportApi, patientApi } from "@/lib/api";
+import { getToken } from "@/lib/auth";
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 20 },
@@ -28,7 +29,11 @@ export default function DoctorReportsPage() {
   useEffect(() => {
     if (!user) return;
     Promise.all([reportApi.list(), patientApi.list()])
-      .then(([r, p]) => { setReports(r as any[]); setPatients(p as any[]); })
+      .then(([r, p]) => {
+        // /reports/list returns a paginated object { total, skip, limit, items }
+        setReports((r as any)?.items ?? []);
+        setPatients(p as any[]);
+      })
       .catch(() => {})
       .finally(() => setFetching(false));
   }, [user]);
@@ -44,6 +49,27 @@ export default function DoctorReportsPage() {
       setError(e.message ?? "فشل توليد التقرير");
     } finally {
       setGenerating(false);
+    }
+  }
+
+  async function downloadReport(filename: string) {
+    try {
+      const token = getToken();
+      const res = await fetch(reportApi.download(filename), {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) throw new Error();
+      const blob = await res.blob();
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      alert("تعذّر تحميل التقرير");
     }
   }
 
@@ -123,11 +149,11 @@ export default function DoctorReportsPage() {
                         {r.size_kb > 0 && <div className="text-slate-400 text-xs mt-0.5">{r.size_kb} KB</div>}
                       </div>
                     </div>
-                    <a href={reportApi.download(r.filename)} target="_blank" rel="noopener noreferrer"
+                    <button onClick={() => downloadReport(r.filename)}
                       className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 hover:bg-blue-100 transition-all">
                       <Download size={13} strokeWidth={2.5} />
                       تحميل
-                    </a>
+                    </button>
                   </motion.div>
                 ))}
               </div>

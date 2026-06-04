@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Heart, Search, Brain, Activity, Stethoscope, ChevronLeft, Calendar, Gamepad2, Smile, Meh, Frown } from "lucide-react";
+import { Heart, Brain, Activity, Stethoscope, ChevronLeft, Calendar, Gamepad2, Smile, Meh, Frown, Users, ChevronDown } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { familyApi } from "@/lib/api";
@@ -21,19 +21,48 @@ const RISK_STYLE: Record<string, { bg: string; text: string; dot: string; label:
   critical: { bg: "bg-red-50 border-red-200",         text: "text-red-700",     dot: "bg-red-500",     label: "حرج"   },
 };
 
+const RELATION_LABELS: Record<string, string> = {
+  son: "ابن", daughter: "ابنة", father: "أب", mother: "أم",
+  brother: "أخ", sister: "أخت", spouse: "زوج/زوجة", other: "أخرى",
+};
+
+type LinkedPatient = { patient_id: number; full_name: string; relation_type: string };
+
 export default function FamilyDashboard() {
   const { user, loading } = useRequireAuth(["family"]);
-  const [patientId, setPatientId] = useState("");
-  const [summary, setSummary]     = useState<any>(null);
-  const [fetching, setFetching]   = useState(false);
-  const [error, setError]         = useState("");
 
-  async function fetchSummary() {
-    if (!patientId.trim()) return;
-    setFetching(true); setError("");
-    try { const res = await familyApi.patientSummary(parseInt(patientId)); setSummary(res); }
-    catch (e: any) { setError(e.message ?? "لم يُعثر على المريض"); }
-    finally { setFetching(false); }
+  const [patients, setPatients]     = useState<LinkedPatient[]>([]);
+  const [loadingPts, setLoadingPts] = useState(true);
+  const [selected, setSelected]     = useState<LinkedPatient | null>(null);
+  const [summary, setSummary]       = useState<any>(null);
+  const [fetching, setFetching]     = useState(false);
+  const [error, setError]           = useState("");
+
+  /* Load linked patients on mount */
+  useEffect(() => {
+    if (!user) return;
+    familyApi.myPatients()
+      .then((list) => {
+        setPatients(list);
+        if (list.length === 1) autoSelect(list[0]);
+      })
+      .catch(() => setPatients([]))
+      .finally(() => setLoadingPts(false));
+  }, [user]);
+
+  async function autoSelect(pt: LinkedPatient) {
+    setSelected(pt);
+    setSummary(null);
+    setError("");
+    setFetching(true);
+    try {
+      const res = await familyApi.patientSummary(pt.patient_id);
+      setSummary(res);
+    } catch (e: any) {
+      setError(e.message ?? "تعذّر تحميل بيانات المريض");
+    } finally {
+      setFetching(false);
+    }
   }
 
   if (loading || !user) return null;
@@ -78,33 +107,57 @@ export default function FamilyDashboard() {
             </div>
           </motion.div>
 
-          {/* ── Search card ── */}
-          <motion.div {...fadeUp(0.15)} className="bg-white border border-gray-100 rounded-[2rem] shadow-sm p-6">
-            <h3 className="text-slate-900 font-extrabold text-base mb-1">ابحث عن حالة مريضك</h3>
-            <p className="text-slate-400 text-sm mb-5">أدخل رقم المريض لعرض ملخص حالته الصحية</p>
-            <div className="flex gap-3">
-              <div className="relative flex-1">
-                <Search size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400" strokeWidth={1.75} />
-                <input
-                  type="number"
-                  value={patientId}
-                  onChange={(e) => setPatientId(e.target.value)}
-                  placeholder="رقم المريض..."
-                  className="w-full pr-10 pl-4 py-3 rounded-xl border border-gray-200 bg-white text-slate-900 placeholder-gray-400 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/10 transition-all text-sm"
-                  onKeyDown={(e) => e.key === "Enter" && fetchSummary()}
-                />
+          {/* ── Patient selector ── */}
+          {loadingPts ? (
+            <motion.div {...fadeUp(0.1)} className="bg-white border border-gray-100 rounded-[2rem] shadow-sm p-6 flex items-center justify-center gap-3">
+              <span className="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+              <span className="text-slate-400 text-sm">جاري تحميل بيانات المرضى...</span>
+            </motion.div>
+          ) : patients.length === 0 ? (
+            <motion.div {...fadeUp(0.1)} className="bg-white border border-gray-100 rounded-[2rem] shadow-sm p-8 text-center">
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br from-slate-200 to-slate-100 mx-auto mb-4">
+                <Users size={24} className="text-slate-400" strokeWidth={1.5} />
               </div>
-              <button onClick={fetchSummary} disabled={fetching}
-                className="px-6 py-3 rounded-xl font-bold text-white bg-gradient-to-l from-emerald-600 to-teal-500 hover:opacity-90 shadow-lg shadow-emerald-600/30 disabled:opacity-50 transition-all text-sm">
-                {fetching ? (
-                  <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin block" />
-                ) : "عرض"}
-              </button>
-            </div>
-            {error && (
-              <div className="mt-3 p-3 rounded-xl bg-red-50 border border-red-100 text-sm text-red-600">{error}</div>
-            )}
-          </motion.div>
+              <h3 className="text-slate-700 font-bold text-base mb-1">لا يوجد مرضى مرتبطون بحسابك</h3>
+              <p className="text-slate-400 text-sm">اطلب من الطبيب أو المريض إضافتك كجهة تواصل عائلية.</p>
+            </motion.div>
+          ) : patients.length > 1 ? (
+            /* Multiple patients — show selector dropdown */
+            <motion.div {...fadeUp(0.1)} className="bg-white border border-gray-100 rounded-[2rem] shadow-sm p-6">
+              <h3 className="text-slate-900 font-extrabold text-base mb-1">اختر المريض</h3>
+              <p className="text-slate-400 text-sm mb-4">لديك {patients.length} مرضى مرتبطون بحسابك</p>
+              <div className="relative">
+                <select
+                  onChange={(e) => {
+                    const pt = patients.find((p) => p.patient_id === Number(e.target.value));
+                    if (pt) autoSelect(pt);
+                  }}
+                  defaultValue=""
+                  className="w-full appearance-none pr-4 pl-10 py-3 rounded-xl border border-gray-200 bg-white text-slate-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/10 transition-all text-sm"
+                >
+                  <option value="" disabled>اختر مريضاً...</option>
+                  {patients.map((p) => (
+                    <option key={p.patient_id} value={p.patient_id}>
+                      {p.full_name} — {RELATION_LABELS[p.relation_type] ?? p.relation_type}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              </div>
+            </motion.div>
+          ) : null /* single patient: auto-selected silently */ }
+
+          {/* Loading summary spinner */}
+          {fetching && (
+            <motion.div {...fadeUp(0.15)} className="bg-white border border-gray-100 rounded-[2rem] shadow-sm p-6 flex items-center justify-center gap-3">
+              <span className="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+              <span className="text-slate-400 text-sm">جاري تحميل بيانات المريض...</span>
+            </motion.div>
+          )}
+
+          {error && (
+            <motion.div {...fadeUp(0.15)} className="p-4 rounded-2xl bg-red-50 border border-red-100 text-sm text-red-600">{error}</motion.div>
+          )}
 
           {/* ── Summary ── */}
           {summary && (
@@ -118,7 +171,10 @@ export default function FamilyDashboard() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-slate-900 font-extrabold text-lg truncate">{summary.patient.full_name}</div>
-                    <div className="text-slate-400 text-sm">{summary.patient.gender ?? "—"}</div>
+                    <div className="text-slate-400 text-sm">
+                      {summary.patient.gender ?? "—"}
+                      {selected && <span className="mr-2 text-emerald-600 font-semibold">· {RELATION_LABELS[selected.relation_type] ?? selected.relation_type}</span>}
+                    </div>
                   </div>
                   {rs && (
                     <span className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold border ${rs.bg} ${rs.text} shrink-0`}>

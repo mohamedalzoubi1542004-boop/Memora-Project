@@ -23,15 +23,12 @@ function VerifyContent() {
   const params  = useSearchParams();
 
   const contact = params.get("contact") ?? "";
-  const method  = (params.get("method") ?? "email") as "email" | "sms";
-  const phone   = params.get("phone") ?? "";
 
   const [digits, setDigits]             = useState<string[]>(Array(6).fill(""));
   const [loading, setLoading]           = useState(false);
   const [error, setError]               = useState("");
   const [success, setSuccess]           = useState(false);
   const [cooldown, setCooldown]         = useState(RESEND_COOLDOWN);
-  const [activeMethod, setActiveMethod] = useState<"email" | "sms">(method);
   const [devCode, setDevCode]           = useState<string | null>(null);
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -42,7 +39,7 @@ function VerifyContent() {
   useEffect(() => {
     if (!contact) return;
     startCountdown();
-    verificationApi.sendOtp(contact, method, "verify")
+    verificationApi.sendOtp(contact, "email", "verify")
       .then((res) => {
         if (res.dev_code) {
           setDevCode(res.dev_code);
@@ -115,13 +112,11 @@ function VerifyContent() {
     }
   }
 
-  async function handleResend(m: "email" | "sms") {
+  async function handleResend() {
     if (cooldown > 0) return;
     setError("");
-    const target = m === "sms" ? phone : contact;
     try {
-      const res = await verificationApi.sendOtp(target, m, "verify");
-      setActiveMethod(m);
+      const res = await verificationApi.sendOtp(contact, "email", "verify");
       startCountdown();
       if (res.dev_code) { setDevCode(res.dev_code); fillDigits(res.dev_code); }
     } catch (err) {
@@ -129,9 +124,7 @@ function VerifyContent() {
     }
   }
 
-  const label = activeMethod === "email"
-    ? `البريد الإلكتروني ${contact}`
-    : `رقم الهاتف ${phone || contact}`;
+  const label = `البريد الإلكتروني ${contact}`;
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6 relative overflow-hidden" dir="rtl">
@@ -242,23 +235,11 @@ function VerifyContent() {
                       {" "}ثانية
                     </p>
                   ) : (
-                    <div className="space-y-2">
-                      <button type="button" onClick={() => handleResend("email")}
-                        className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-cyan-600 font-bold transition-colors">
-                        <RefreshCw size={13} strokeWidth={2.5} />
-                        إعادة إرسال عبر البريد الإلكتروني
-                      </button>
-                      {phone && (
-                        <>
-                          <span className="block text-slate-300 text-xs">أو</span>
-                          <button type="button" onClick={() => handleResend("sms")}
-                            className="inline-flex items-center gap-1.5 text-sm text-violet-600 hover:text-violet-700 font-bold transition-colors">
-                            <RefreshCw size={13} strokeWidth={2.5} />
-                            إعادة إرسال عبر SMS
-                          </button>
-                        </>
-                      )}
-                    </div>
+                    <button type="button" onClick={handleResend}
+                      className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-cyan-600 font-bold transition-colors">
+                      <RefreshCw size={13} strokeWidth={2.5} />
+                      إعادة إرسال الرمز
+                    </button>
                   )}
                   <p className="text-xs text-slate-400">الرمز صالح لمدة 10 دقائق فقط</p>
                 </div>

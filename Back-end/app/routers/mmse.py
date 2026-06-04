@@ -10,10 +10,37 @@ from app.models.user import User, UserRole
 from app.models.patient import Patient
 from app.models.doctor import Doctor
 from app.models.mmse_result import MMSEResult
+from app.models.family_contact import FamilyContact
 from app.schemas.mmse_schema import MMSECreate, MMSEOut, MMSESummary
 from app.utils.deps import get_current_user
 
 router = APIRouter(prefix="/mmse", tags=["mmse"])
+
+
+def _assert_read_access(current_user: User, patient_id: int, db: Session) -> None:
+    """Raise 403 unless the caller is allowed to read this patient's MMSE data."""
+    if current_user.role == UserRole.ADMIN:
+        return
+    if current_user.role == UserRole.DOCTOR:
+        doc = db.query(Doctor).filter(Doctor.user_id == current_user.id).first()
+        patient = db.query(Patient).filter(Patient.id == patient_id).first()
+        if not doc or not patient or patient.assigned_doctor_id != doc.id:
+            raise HTTPException(status_code=403, detail="هذا المريض غير مسجل تحت إشرافك")
+        return
+    if current_user.role == UserRole.PATIENT:
+        own = db.query(Patient).filter(Patient.user_id == current_user.id).first()
+        if not own or own.id != patient_id:
+            raise HTTPException(status_code=403, detail="يمكنك عرض سجلاتك الخاصة فقط")
+        return
+    if current_user.role == UserRole.FAMILY:
+        linked = db.query(FamilyContact).filter(
+            FamilyContact.patient_id == patient_id,
+            FamilyContact.user_id == current_user.id,
+        ).first()
+        if not linked:
+            raise HTTPException(status_code=403, detail="لا يحق لك الوصول لبيانات هذا المريض")
+        return
+    raise HTTPException(status_code=403, detail="غير مصرح بالوصول")
 
 
 def _severity(score: int) -> str:
@@ -53,16 +80,29 @@ def submit_mmse(
     db: Session = Depends(get_db),
 ):
     if current_user.role not in (UserRole.DOCTOR, UserRole.PATIENT):
-        raise HTTPException(status_code=403, detail="Access denied")
+        raise HTTPException(status_code=403, detail="غير مصرح بالوصول")
 
     patient = db.query(Patient).filter(Patient.id == data.patient_id).first()
     if not patient:
-        raise HTTPException(status_code=404, detail="Patient not found")
+        raise HTTPException(status_code=404, detail="المريض غير موجود")
 
     doctor_id = None
     if current_user.role == UserRole.DOCTOR:
         doc = db.query(Doctor).filter(Doctor.user_id == current_user.id).first()
-        doctor_id = doc.id if doc else None
+        if not doc:
+            raise HTTPException(status_code=404, detail="لم يُعثر على ملف الطبيب")
+        if not doc.is_approved:
+            raise HTTPException(status_code=403, detail="حسابك لم يُوافق عليه بعد من قِبل المدير")
+        if doc.is_suspended:
+            raise HTTPException(status_code=403, detail="حسابك موقوف — يرجى التواصل مع الإدارة")
+        if patient.assigned_doctor_id != doc.id:
+            raise HTTPException(status_code=403, detail="هذا المريض غير مسجل تحت إشرافك")
+        doctor_id = doc.id
+
+    elif current_user.role == UserRole.PATIENT:
+        own = db.query(Patient).filter(Patient.user_id == current_user.id).first()
+        if not own or own.id != data.patient_id:
+            raise HTTPException(status_code=403, detail="يمكنك تسجيل اختبارك الخاص فقط")
 
     total = (
         data.temporal_orientation
@@ -104,13 +144,19 @@ def submit_mmse(
 @router.get("/patient/{patient_id}", response_model=List[MMSEOut])
 def patient_history(
     patient_id: int,
+    skip: int = 0,
+    limit: int = 20,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    _assert_read_access(current_user, patient_id, db)
+    limit = min(limit, 100)
     records = (
         db.query(MMSEResult)
         .filter(MMSEResult.patient_id == patient_id)
         .order_by(MMSEResult.created_at.desc())
+        .offset(skip)
+        .limit(limit)
         .all()
     )
     return [_build_out(r) for r in records]
@@ -122,6 +168,7 @@ def latest_mmse(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    _assert_read_access(current_user, patient_id, db)
     record = (
         db.query(MMSEResult)
         .filter(MMSEResult.patient_id == patient_id)
@@ -129,7 +176,7 @@ def latest_mmse(
         .first()
     )
     if not record:
-        raise HTTPException(status_code=404, detail="No MMSE result found")
+        raise HTTPException(status_code=404, detail="لا توجد نتيجة MMSE لهذا المريض")
     return _build_out(record)
 
 
@@ -139,6 +186,7 @@ def mmse_summary(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    _assert_read_access(current_user, patient_id, db)
     records = (
         db.query(MMSEResult)
         .filter(MMSEResult.patient_id == patient_id)
@@ -147,7 +195,7 @@ def mmse_summary(
         .all()
     )
     if not records:
-        raise HTTPException(status_code=404, detail="No MMSE records found")
+        raise HTTPException(status_code=404, detail="لا توجد سجلات MMSE لهذا المريض")
 
     latest = records[0]
     return MMSESummary(

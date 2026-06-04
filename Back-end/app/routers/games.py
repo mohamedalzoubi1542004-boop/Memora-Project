@@ -7,7 +7,8 @@ from typing import List
 from app.database import get_db
 from app.models.game_session import GameSession
 from app.models.patient import Patient
-from app.models.user import User
+from app.models.doctor import Doctor
+from app.models.user import User, UserRole
 from app.schemas.game_schema import GameSessionCreate, GameSessionOut, GameStatsOut
 from app.utils.deps import get_current_user
 
@@ -22,6 +23,20 @@ def _get_patient(user: User, db: Session) -> Patient:
     if not patient:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "هذا الحساب ليس حساب مريض")
     return patient
+
+
+def _assert_can_view_patient_games(current_user: User, patient: Patient, db: Session) -> None:
+    """Raise unless current_user may view this patient's game data."""
+    if current_user.role == UserRole.ADMIN:
+        return
+    if current_user.role == UserRole.DOCTOR:
+        doctor = db.query(Doctor).filter(Doctor.user_id == current_user.id).first()
+        if not doctor or patient.assigned_doctor_id != doctor.id:
+            raise HTTPException(status.HTTP_403_FORBIDDEN, "هذا المريض غير مسجل تحت إشرافك")
+        return
+    if current_user.role == UserRole.PATIENT and patient.user_id == current_user.id:
+        return
+    raise HTTPException(status.HTTP_403_FORBIDDEN, "غير مصرح بالوصول")
 
 
 @router.post("/submit", response_model=GameSessionOut, status_code=status.HTTP_201_CREATED)
@@ -75,9 +90,10 @@ def get_patient_stats_for_doctor(
     current_user: User = Depends(get_current_user),
 ):
     """Doctor endpoint — get game stats for a specific patient."""
-    from app.models.user import UserRole
-    if current_user.role not in (UserRole.DOCTOR, UserRole.ADMIN):
-        raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+    patient = db.query(Patient).filter(Patient.id == patient_id).first()
+    if not patient:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "المريض غير موجود")
+    _assert_can_view_patient_games(current_user, patient, db)
     sessions = db.query(GameSession).filter(GameSession.patient_id == patient_id).all()
     return _build_stats(sessions)
 
@@ -114,13 +130,10 @@ def get_by_type(
     current_user: User = Depends(get_current_user),
 ):
     """Return sessions of a specific game type for a patient (doctor/admin/self)."""
-    from app.models.user import UserRole
     patient = db.query(Patient).filter(Patient.id == patient_id).first()
     if not patient:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "Patient not found")
-    if current_user.role not in (UserRole.DOCTOR, UserRole.ADMIN):
-        if patient.user_id != current_user.id:
-            raise HTTPException(status.HTTP_403_FORBIDDEN, "Access denied")
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "المريض غير موجود")
+    _assert_can_view_patient_games(current_user, patient, db)
     if game_type not in VALID_GAME_TYPES:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, f"نوع اللعبة غير صالح: {game_type}")
 

@@ -4,11 +4,10 @@ import { useCallback, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { KeyRound, Mail, Phone, RefreshCw, ChevronRight, FlaskConical, Eye, EyeOff } from "lucide-react";
+import { KeyRound, Mail, RefreshCw, ChevronRight, FlaskConical, Eye, EyeOff } from "lucide-react";
 import { verificationApi, ApiError } from "@/lib/api";
 
 type Step = "contact" | "otp" | "newpass";
-type Method = "email" | "sms";
 
 const RESEND_COOLDOWN = 60;
 
@@ -19,7 +18,6 @@ export default function ForgotPasswordPage() {
   const router = useRouter();
 
   const [step, setStep]           = useState<Step>("contact");
-  const [method, setMethod]       = useState<Method>("email");
   const [identifier, setIdentifier] = useState("");
   const [digits, setDigits]       = useState<string[]>(Array(6).fill(""));
   const [newPass, setNewPass]     = useState("");
@@ -49,11 +47,11 @@ export default function ForgotPasswordPage() {
   // ── Step 1: Send OTP ──────────────────────────────────────────────────────
   async function handleSendOtp(e: React.FormEvent) {
     e.preventDefault();
-    if (!identifier.trim()) { setError("أدخل بريدك الإلكتروني أو رقم هاتفك"); return; }
+    if (!identifier.trim()) { setError("أدخل بريدك الإلكتروني"); return; }
     setLoading(true);
     setError("");
     try {
-      const res = await verificationApi.sendOtp(identifier.trim(), method, "reset");
+      const res = await verificationApi.sendOtp(identifier.trim(), "email", "reset");
       setStep("otp");
       startCountdown();
       if (res.dev_code) {
@@ -109,7 +107,7 @@ export default function ForgotPasswordPage() {
     if (cooldown > 0) return;
     setError("");
     try {
-      const res = await verificationApi.sendOtp(identifier.trim(), method, "reset");
+      const res = await verificationApi.sendOtp(identifier.trim(), "email", "reset");
       startCountdown();
       if (res.dev_code) {
         setDevCode(res.dev_code);
@@ -163,7 +161,7 @@ export default function ForgotPasswordPage() {
           </div>
           <h1 className="text-3xl font-black text-slate-900">استعادة كلمة المرور</h1>
           <p className="text-slate-500 mt-1 text-sm">
-            {step === "contact" ? "أدخل بريدك أو هاتفك لإرسال رمز التحقق"
+            {step === "contact" ? "أدخل بريدك الإلكتروني لإرسال رمز التحقق"
             : step === "otp"    ? "أدخل الرمز الذي أُرسل إليك"
             :                    "أدخل كلمة المرور الجديدة"}
           </p>
@@ -199,60 +197,22 @@ export default function ForgotPasswordPage() {
                 onSubmit={handleSendOtp}
                 className="space-y-5"
               >
-                {/* Method toggle */}
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-3">
-                    طريقة الاستعادة
-                  </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => { setMethod("email"); setIdentifier(""); setError(""); }}
-                      className={`flex items-center gap-2.5 p-3.5 rounded-2xl border-2 transition-all font-semibold text-sm ${
-                        method === "email"
-                          ? "border-blue-500 bg-blue-50 text-blue-700"
-                          : "border-gray-200 bg-white text-slate-500 hover:border-blue-200"
-                      }`}
-                    >
-                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
-                        method === "email" ? "bg-blue-100" : "bg-gray-100"
-                      }`}>
-                        <Mail size={15} strokeWidth={2} />
-                      </div>
-                      البريد الإلكتروني
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => { setMethod("sms"); setIdentifier(""); setError(""); }}
-                      className={`flex items-center gap-2.5 p-3.5 rounded-2xl border-2 transition-all font-semibold text-sm ${
-                        method === "sms"
-                          ? "border-violet-500 bg-violet-50 text-violet-700"
-                          : "border-gray-200 bg-white text-slate-500 hover:border-violet-200"
-                      }`}
-                    >
-                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
-                        method === "sms" ? "bg-violet-100" : "bg-gray-100"
-                      }`}>
-                        <Phone size={15} strokeWidth={2} />
-                      </div>
-                      رسالة SMS
-                    </button>
-                  </div>
-                </div>
-
-                {/* Identifier input */}
+                {/* Email input */}
                 <div>
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">
-                    {method === "email" ? "البريد الإلكتروني" : "رقم الهاتف"}
+                    البريد الإلكتروني
                   </label>
-                  <input
-                    type={method === "email" ? "email" : "tel"}
-                    required
-                    value={identifier}
-                    onChange={(e) => { setIdentifier(e.target.value); setError(""); }}
-                    placeholder={method === "email" ? "example@email.com" : "+966 5xxxxxxxx"}
-                    className={fieldClass}
-                  />
+                  <div className="relative">
+                    <input
+                      type="email"
+                      required
+                      value={identifier}
+                      onChange={(e) => { setIdentifier(e.target.value); setError(""); }}
+                      placeholder="example@email.com"
+                      className={`${fieldClass} pl-10`}
+                    />
+                    <Mail size={16} strokeWidth={2} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  </div>
                 </div>
 
                 {error && (
@@ -366,7 +326,7 @@ export default function ForgotPasswordPage() {
                     className="flex items-center gap-1 text-sm text-slate-400 hover:text-slate-600 mx-auto transition-colors"
                   >
                     <ChevronRight size={13} strokeWidth={2} />
-                    تغيير طريقة الاستعادة
+                    تغيير البريد الإلكتروني
                   </button>
                 </div>
               </motion.form>

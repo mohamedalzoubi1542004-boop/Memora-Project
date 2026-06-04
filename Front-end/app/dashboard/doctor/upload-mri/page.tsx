@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, Brain, FileImage, RotateCcw, Save } from "lucide-react";
+import { Upload, Brain, FileImage, RotateCcw, CheckCircle2, Clock } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import { diagnosisApi, patientApi, ApiError } from "@/lib/api";
@@ -35,7 +35,7 @@ export default function UploadMRIPage() {
   const [uploading, setUploading]             = useState(false);
   const [error, setError]                     = useState("");
   const [notes, setNotes]                     = useState("");
-  const [savingNotes, setSavingNotes]         = useState(false);
+  const [approving, setApproving]             = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -66,12 +66,17 @@ export default function UploadMRIPage() {
     finally { setUploading(false); }
   }
 
-  async function saveNotes() {
-    if (!result || !notes.trim()) return;
-    setSavingNotes(true);
-    try { await diagnosisApi.updateNotes(result.id, notes); setResult({ ...result, doctor_notes: notes }); }
-    catch {}
-    setSavingNotes(false);
+  async function approveDiagnosis() {
+    if (!result || result.status === "completed") return;
+    setApproving(true); setError("");
+    try {
+      const updated: any = await diagnosisApi.approve(result.id, notes.trim() || undefined);
+      setResult(updated);
+    } catch (e) {
+      setError(e instanceof ApiError ? (e as any).message : "فشل اعتماد التشخيص");
+    } finally {
+      setApproving(false);
+    }
   }
 
   if (loading || !user) return null;
@@ -165,22 +170,47 @@ export default function UploadMRIPage() {
           <AnimatePresence>
             {result && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-white border border-gray-100 rounded-[2rem] shadow-sm p-6 space-y-6">
-                <h3 className="text-slate-900 font-extrabold text-base flex items-center gap-2">
-                  <Brain size={18} className="text-blue-600" strokeWidth={2} />
-                  نتيجة التحليل بالذكاء الاصطناعي
-                </h3>
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="text-slate-900 font-extrabold text-base flex items-center gap-2">
+                    <Brain size={18} className="text-blue-600" strokeWidth={2} />
+                    نتيجة التحليل بالذكاء الاصطناعي
+                  </h3>
+                  {result.status === "completed" ? (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 border border-emerald-200 text-emerald-700">
+                      <CheckCircle2 size={13} strokeWidth={2.5} />
+                      معتمد — ظاهر للمريض
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-50 border border-amber-200 text-amber-700">
+                      <Clock size={13} strokeWidth={2.5} />
+                      معلّق — بانتظار اعتمادك
+                    </span>
+                  )}
+                </div>
 
                 {(() => {
                   const cs = CLASS_STYLE[result.classification] ?? { bg: "bg-gray-50 border-gray-200", text: "text-gray-700", iconBg: "from-slate-400 to-slate-500", label: result.classification };
+                  const conf = Math.round(result.confidence * 100);
+                  const lowConfidence = result.confidence < 0.75;
                   return (
-                    <div className={`flex items-center gap-5 p-5 rounded-2xl border ${cs.bg}`}>
-                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br ${cs.iconBg} shadow-lg shrink-0`}>
-                        <Brain size={24} className="text-white" strokeWidth={2} />
+                    <div className="space-y-3">
+                      <div className={`flex items-center gap-5 p-5 rounded-2xl border ${cs.bg}`}>
+                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br ${cs.iconBg} shadow-lg shrink-0`}>
+                          <Brain size={24} className="text-white" strokeWidth={2} />
+                        </div>
+                        <div>
+                          <div className={`text-2xl font-black ${cs.text}`}>{cs.label}</div>
+                          <div className="text-slate-400 text-sm mt-0.5">نسبة الثقة: {conf}%</div>
+                        </div>
                       </div>
-                      <div>
-                        <div className={`text-2xl font-black ${cs.text}`}>{cs.label}</div>
-                        <div className="text-slate-400 text-sm mt-0.5">{result.classification} — ثقة {Math.round(result.confidence * 100)}%</div>
-                      </div>
+                      {lowConfidence && (
+                        <div className="flex items-start gap-3 p-4 rounded-2xl bg-amber-50 border border-amber-200">
+                          <span className="text-amber-500 text-lg shrink-0">⚠️</span>
+                          <p className="text-amber-800 text-sm leading-relaxed">
+                            <span className="font-bold">تحذير:</span> نسبة الثقة منخفضة ({conf}%). قد تكون الصورة غير واضحة أو غير مناسبة للتحليل. يُنصح بالتأكد من رفع صورة رنين مغناطيسي دماغية واضحة وعدم الاعتماد على هذه النتيجة طبياً.
+                          </p>
+                        </div>
+                      )}
                     </div>
                   );
                 })()}
@@ -202,16 +232,33 @@ export default function UploadMRIPage() {
                   </div>
                 )}
 
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">ملاحظات الطبيب</label>
-                  <textarea rows={3} value={notes} onChange={(e) => setNotes(e.target.value)}
-                    placeholder="أضف ملاحظاتك الطبية هنا..." className={`${inputClass} resize-none`} />
-                  <button onClick={saveNotes} disabled={savingNotes || !notes.trim()}
-                    className="mt-2 flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-sm shadow-blue-600/20 disabled:opacity-40 transition-all">
-                    <Save size={14} strokeWidth={2.5} />
-                    {savingNotes ? "جاري الحفظ..." : "حفظ الملاحظات"}
-                  </button>
-                </div>
+                {result.status === "completed" ? (
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide">ملاحظات الطبيب</label>
+                    <p className="text-sm text-slate-700 bg-slate-50 border border-gray-100 rounded-xl p-3 leading-relaxed">
+                      {result.doctor_notes?.trim() || "لا توجد ملاحظات"}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">ملاحظات الطبيب (اختياري)</label>
+                      <textarea rows={3} value={notes} onChange={(e) => setNotes(e.target.value)}
+                        placeholder="راجع نتيجة الذكاء الاصطناعي وأضف ملاحظاتك قبل الاعتماد..." className={`${inputClass} resize-none`} />
+                    </div>
+                    <div className="flex items-start gap-3 p-3 rounded-xl bg-blue-50 border border-blue-100">
+                      <Clock size={15} className="text-blue-500 shrink-0 mt-0.5" strokeWidth={2} />
+                      <p className="text-blue-800 text-xs leading-relaxed">
+                        هذا التشخيص <span className="font-bold">غير ظاهر للمريض</span> حتى تعتمده. راجع نتيجة الذكاء الاصطناعي جيداً — فهي اقتراح يحتاج تأكيدك.
+                      </p>
+                    </div>
+                    <button onClick={approveDiagnosis} disabled={approving}
+                      className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-sm font-bold text-white bg-gradient-to-l from-emerald-600 to-teal-500 hover:opacity-90 shadow-lg shadow-emerald-600/30 disabled:opacity-50 transition-all">
+                      <CheckCircle2 size={16} strokeWidth={2.5} />
+                      {approving ? "جاري الاعتماد..." : "اعتماد التشخيص وإظهاره للمريض"}
+                    </button>
+                  </div>
+                )}
 
                 <button
                   onClick={() => { setFile(null); setPreview(null); setResult(null); setNotes(""); }}

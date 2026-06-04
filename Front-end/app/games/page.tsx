@@ -80,10 +80,10 @@ export default function GamesHub() {
       <div className="bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-4 h-[70px] flex items-center justify-between">
           <Link
-            href="/"
+            href="/dashboard/patient"
             className="flex items-center gap-2 text-slate-500 hover:text-blue-600 transition-colors text-sm font-medium"
           >
-            <ArrowRight size={16} /> الرئيسية
+            <ArrowRight size={16} /> لوحة التحكم
           </Link>
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">

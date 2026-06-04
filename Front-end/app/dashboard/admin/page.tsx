@@ -5,7 +5,8 @@ import { motion } from "framer-motion";
 import { Users, Stethoscope, CheckCircle, Clock, UserCheck, ChevronLeft, Activity, Trash2 } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
-import { adminApi, patientApi } from "@/lib/api";
+import { adminApi, patientApi, doctorApi } from "@/lib/api";
+import { getToken } from "@/lib/auth";
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 24 },
@@ -48,9 +49,27 @@ export default function AdminDashboard() {
     setActionLoading(null);
   }
 
+  async function viewCv(doctorId: number) {
+    try {
+      const token = getToken();
+      const res = await fetch(doctorApi.cvUrl(doctorId), {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) throw new Error();
+      const blob = await res.blob();
+      const url  = URL.createObjectURL(blob);
+      window.open(url, "_blank", "noopener,noreferrer");
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    } catch {
+      alert("تعذّر فتح ملف السيرة الذاتية");
+    }
+  }
+
   async function rejectDoctor(id: number) {
+    const reason = prompt("سبب رفض الطبيب (سيظهر له عند محاولة تسجيل الدخول):");
+    if (reason === null) return;   // admin cancelled
     setActionLoading(id);
-    await adminApi.reject(id).catch(() => {});
+    await adminApi.reject(id, reason.trim() || undefined).catch(() => {});
     setPendingDoctors((prev) => prev.filter((d) => d.id !== id));
     setStats((s: any) => s ? { ...s, pending_doctors: Math.max(0, s.pending_doctors - 1) } : s);
     setActionLoading(null);
@@ -193,11 +212,11 @@ export default function AdminDashboard() {
                         <td className={`${tdClass} text-slate-600`}>{d.specialization ?? "—"}</td>
                         <td className={tdClass}>
                           {d.cv_file ? (
-                            <a href={`/api/uploads/${d.cv_file}`} target="_blank" rel="noopener noreferrer"
+                            <button onClick={() => viewCv(d.id)}
                               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-100 hover:bg-blue-100 transition-all">
                               <ChevronLeft size={12} />
                               عرض CV
-                            </a>
+                            </button>
                           ) : (
                             <span className="text-xs text-slate-400">لا يوجد</span>
                           )}

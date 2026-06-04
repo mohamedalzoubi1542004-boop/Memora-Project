@@ -15,8 +15,12 @@ const ROLES = [
   { value: "family",  label: "عائلة",  desc: "متابعة ذوي المريض",      Icon: Users,        gradient: "from-emerald-500 to-teal-500", shadow: "shadow-emerald-500/30" },
 ];
 
-const fieldClass = "w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-slate-900 placeholder-gray-400 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/10 transition-all text-sm";
+const fieldBase = "px-4 py-3 rounded-xl border border-gray-200 bg-white text-slate-900 placeholder-gray-400 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/10 transition-all text-sm";
+const fieldClass = `w-full ${fieldBase}`;
 const labelClass = "block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2";
+
+// Common dial codes — default is Jordan (+962)
+const COUNTRY_CODES = ["+962", "+966", "+971", "+970", "+965", "+974", "+973", "+968", "+20", "+961", "+963", "+964"];
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -24,7 +28,8 @@ export default function RegisterPage() {
   const [role, setRole]                   = useState("patient");
   const [fullName, setFullName]           = useState("");
   const [email, setEmail]                 = useState("");
-  const [phone, setPhone]                 = useState("");
+  const [countryCode, setCountryCode]     = useState("+962");
+  const [phoneNumber, setPhoneNumber]     = useState("");
   const [password, setPassword]           = useState("");
   const [confirm, setConfirm]             = useState("");
   const [specialization, setSpecialization] = useState("طب الأعصاب");
@@ -33,6 +38,7 @@ export default function RegisterPage() {
   const [cvFile, setCvFile]               = useState<File | null>(null);
   const [showPass, setShowPass]           = useState(false);
   const [showConfirm, setShowConfirm]     = useState(false);
+  const [rememberMe, setRememberMe]       = useState(true);
   const [error, setError]                 = useState("");
   const [loading, setLoading]             = useState(false);
 
@@ -44,6 +50,12 @@ export default function RegisterPage() {
     if (role === "doctor" && !licenseNumber.trim()) {
       setError("رقم الترخيص الطبي مطلوب للأطباء"); return;
     }
+
+    // Merge country code + number into one unified phone string for the backend.
+    // Strip non-digits and any leading national-trunk zero (e.g. 079... → 79...).
+    const cleanNumber = phoneNumber.replace(/\D/g, "").replace(/^0+/, "");
+    const phone = cleanNumber ? `${countryCode}${cleanNumber}` : "";
+
     setLoading(true);
     try {
       let result: any;
@@ -59,7 +71,7 @@ export default function RegisterPage() {
         if (cvFile) form.append("cv_file", cvFile);
         result = await authApi.registerDoctor(form);
       } else {
-        result = await authApi.register({ email, password, full_name: fullName, phone, role });
+        result = await authApi.register({ email, password, full_name: fullName, phone, role, remember_me: rememberMe });
       }
       saveAuth({
         user_id: result.user_id,
@@ -104,7 +116,9 @@ export default function RegisterPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/logo.png" alt="Memora" className="h-12 w-auto object-contain mx-auto mb-4" />
+          <Link href="/" aria-label="الصفحة الرئيسية" className="inline-block mb-4 hover:opacity-80 transition-opacity">
+            <img src="/images/logo.png" alt="Memora" className="h-12 w-auto object-contain" />
+          </Link>
           <h1 className="text-3xl font-black text-slate-900">إنشاء حساب</h1>
           <p className="text-slate-500 mt-1">انضم إلى منصة Memora الطبية</p>
         </div>
@@ -148,8 +162,16 @@ export default function RegisterPage() {
             </div>
             <div>
               <label className={labelClass}>رقم الجوال (اختياري)</label>
-              <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
-                placeholder="+966 5xxxxxxxx" autoComplete="off" className={fieldClass} />
+              <div className="flex gap-2" dir="ltr">
+                <select value={countryCode} onChange={(e) => setCountryCode(e.target.value)}
+                  className={`${fieldBase} w-28 shrink-0 text-center`}>
+                  {COUNTRY_CODES.map((code) => (
+                    <option key={code} value={code}>{code}</option>
+                  ))}
+                </select>
+                <input type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)}
+                  placeholder="7xxxxxxxx" autoComplete="off" className={`${fieldBase} flex-1 min-w-0`} />
+              </div>
             </div>
 
             {/* Doctor-specific fields */}
@@ -237,6 +259,19 @@ export default function RegisterPage() {
                 </div>
               </div>
             </div>
+
+            {/* Remember me — only patients get a long-lived session */}
+            {role === "patient" && (
+              <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-400/20 cursor-pointer"
+                />
+                <span className="text-sm text-slate-600 font-medium">تذكّرني</span>
+              </label>
+            )}
 
             {error && (
               <div className="p-3 rounded-xl text-sm text-red-600 bg-red-50 border border-red-100">{error}</div>

@@ -18,7 +18,7 @@ router = APIRouter(prefix="/admin", tags=["admin"])
 
 def _require_admin(current_user: User = Depends(get_current_user)) -> User:
     if current_user.role != UserRole.ADMIN:
-        raise HTTPException(status_code=403, detail="Admins only")
+        raise HTTPException(status_code=403, detail="المدير فقط")
     return current_user
 
 
@@ -80,21 +80,33 @@ def approve_doctor(
 ):
     doctor = db.query(Doctor).filter(Doctor.id == doctor_id).first()
     if not doctor:
-        raise HTTPException(status_code=404, detail="Doctor not found")
+        raise HTTPException(status_code=404, detail="الطبيب غير موجود")
     doctor.is_approved = True
+    doctor.rejection_reason = None          # clear any prior rejection
+    # A previously rejected doctor was deactivated — reactivate on approval
+    user = db.query(User).filter(User.id == doctor.user_id).first()
+    if user:
+        user.is_active = True
     db.commit()
     return {"message": "Doctor approved"}
+
+
+class _RejectDoctorBody(BaseModel):
+    reason: str | None = None
 
 
 @router.post("/doctors/{doctor_id}/reject")
 def reject_doctor(
     doctor_id: int,
+    data: _RejectDoctorBody = _RejectDoctorBody(),
     _: User = Depends(_require_admin),
     db: Session = Depends(get_db),
 ):
     doctor = db.query(Doctor).filter(Doctor.id == doctor_id).first()
     if not doctor:
-        raise HTTPException(status_code=404, detail="Doctor not found")
+        raise HTTPException(status_code=404, detail="الطبيب غير موجود")
+    doctor.is_approved = False
+    doctor.rejection_reason = (data.reason or "").strip() or "لم يُحدَّد سبب الرفض"
     user = db.query(User).filter(User.id == doctor.user_id).first()
     if user:
         user.is_active = False
@@ -110,7 +122,7 @@ def suspend_doctor(
 ):
     doctor = db.query(Doctor).filter(Doctor.id == doctor_id).first()
     if not doctor:
-        raise HTTPException(status_code=404, detail="Doctor not found")
+        raise HTTPException(status_code=404, detail="الطبيب غير موجود")
     doctor.is_suspended = True
     db.commit()
     return {"message": "Doctor suspended"}
@@ -124,7 +136,7 @@ def unsuspend_doctor(
 ):
     doctor = db.query(Doctor).filter(Doctor.id == doctor_id).first()
     if not doctor:
-        raise HTTPException(status_code=404, detail="Doctor not found")
+        raise HTTPException(status_code=404, detail="الطبيب غير موجود")
     doctor.is_suspended = False
     db.commit()
     return {"message": "Doctor unsuspended"}
@@ -158,7 +170,7 @@ def deactivate_user(
         raise HTTPException(status_code=400, detail="لا يمكنك إيقاف حسابك الشخصي")
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="المستخدم غير موجود")
     if user.role == UserRole.ADMIN:
         raise HTTPException(status_code=400, detail="لا يمكن إيقاف حساب مدير النظام")
     user.is_active = False
@@ -174,7 +186,7 @@ def activate_user(
 ):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="المستخدم غير موجود")
     user.is_active = True
     db.commit()
     return {"message": "User activated"}
@@ -187,10 +199,21 @@ def delete_user(
     db: Session = Depends(get_db),
 ):
     if user_id == current_admin.id:
-        raise HTTPException(status_code=400, detail="Cannot delete your own account")
+        raise HTTPException(status_code=400, detail="لا يمكنك حذف حسابك الخاص")
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="المستخدم غير موجود")
+
+    # A patient with a medical record must never be hard-deleted — deleting the
+    # user cascades and destroys all diagnoses/tests permanently. Deactivate instead.
+    if user.role == UserRole.PATIENT:
+        patient = db.query(Patient).filter(Patient.user_id == user.id).first()
+        if patient and db.query(Diagnosis).filter(Diagnosis.patient_id == patient.id).first():
+            raise HTTPException(
+                status_code=409,
+                detail="لا يمكن حذف مريض له سجل تشخيصات طبية — استخدم الإيقاف بدلاً من الحذف",
+            )
+
     db.delete(user)
     db.commit()
 
@@ -208,11 +231,11 @@ def assign_doctor_to_patient(
 ):
     patient = db.query(Patient).filter(Patient.id == patient_id).first()
     if not patient:
-        raise HTTPException(status_code=404, detail="Patient not found")
+        raise HTTPException(status_code=404, detail="المريض غير موجود")
     if data.doctor_id is not None:
         doctor = db.query(Doctor).filter(Doctor.id == data.doctor_id, Doctor.is_approved == True).first()
         if not doctor:
-            raise HTTPException(status_code=404, detail="Doctor not found or not approved")
+            raise HTTPException(status_code=404, detail="الطبيب غير موجود أو لم يُوافق على حسابه بعد")
     patient.assigned_doctor_id = data.doctor_id
     db.commit()
     return {"message": "تم تحديث الطبيب المعالج"}

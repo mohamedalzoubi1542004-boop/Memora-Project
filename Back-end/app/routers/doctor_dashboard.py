@@ -25,14 +25,14 @@ router = APIRouter(prefix="/doctor", tags=["doctor-dashboard"])
 
 def _require_doctor(current_user: User = Depends(get_current_user)) -> User:
     if current_user.role != UserRole.DOCTOR:
-        raise HTTPException(status_code=403, detail="Doctors only")
+        raise HTTPException(status_code=403, detail="الأطباء فقط")
     return current_user
 
 
 def _get_doctor_record(current_user: User, db: Session) -> Doctor:
     doctor = db.query(Doctor).filter(Doctor.user_id == current_user.id).first()
     if not doctor:
-        raise HTTPException(status_code=404, detail="Doctor profile not found")
+        raise HTTPException(status_code=404, detail="لم يُعثر على ملف الطبيب")
     return doctor
 
 
@@ -41,6 +41,16 @@ def _latest(model, patient_id: int, db: Session):
         db.query(model)
         .filter(model.patient_id == patient_id)
         .order_by(model.created_at.desc())
+        .first()
+    )
+
+
+def _latest_completed_diagnosis(patient_id: int, db: Session):
+    """Risk must be based on a doctor-approved diagnosis only — never a pending one."""
+    return (
+        db.query(Diagnosis)
+        .filter(Diagnosis.patient_id == patient_id, Diagnosis.status == "completed")
+        .order_by(Diagnosis.created_at.desc())
         .first()
     )
 
@@ -68,16 +78,17 @@ def doctor_stats(
         .count()
     )
 
-    # High-risk: last MRI is Moderate/Mild demented — only this doctor's patients
-    high_risk = (
-        db.query(func.count(Patient.id.distinct()))
-        .join(Diagnosis, Diagnosis.patient_id == Patient.id)
-        .filter(
-            Patient.assigned_doctor_id == doctor.id,
-            Diagnosis.classification.in_(["MildDemented", "ModerateDemented"]),
-        )
-        .scalar() or 0
+    # High-risk: count only patients whose LATEST diagnosis is Mild/ModerateDemented
+    patients_list = (
+        db.query(Patient)
+        .filter(Patient.assigned_doctor_id == doctor.id)
+        .all()
     )
+    high_risk = 0
+    for p in patients_list:
+        latest_diag = _latest_completed_diagnosis(p.id, db)
+        if latest_diag and latest_diag.classification in ("MildDemented", "ModerateDemented"):
+            high_risk += 1
 
     return {
         "total_patients": total_patients,
@@ -107,8 +118,10 @@ def my_patients(
         mmse = _latest(MMSEResult, p.id, db)
         symp = _latest(SymptomEntry, p.id, db)
 
+        # Risk is based only on a doctor-approved diagnosis, not a pending one
+        risk_diag = _latest_completed_diagnosis(p.id, db)
         risk = compute_risk(
-            diag.classification if diag else None,
+            risk_diag.classification if risk_diag else None,
             mmse.total_score if mmse else None,
             symp.total_score if symp else None,
         )
@@ -147,11 +160,12 @@ def risk_assessment(
     doctor = _get_doctor_record(current_user, db)
     patient = db.query(Patient).filter(Patient.id == patient_id).first()
     if not patient:
-        raise HTTPException(status_code=404, detail="Patient not found")
+        raise HTTPException(status_code=404, detail="المريض غير موجود")
     if patient.assigned_doctor_id != doctor.id:
         raise HTTPException(status_code=403, detail="هذا المريض غير مسجل تحت إشرافك")
 
-    diag = _latest(Diagnosis, patient_id, db)
+    # A risk assessment must reflect approved data only
+    diag = _latest_completed_diagnosis(patient_id, db)
     mmse = _latest(MMSEResult, patient_id, db)
     symp = _latest(SymptomEntry, patient_id, db)
 
@@ -191,7 +205,7 @@ def patient_summary(
     doctor = _get_doctor_record(current_user, db)
     patient = db.query(Patient).filter(Patient.id == patient_id).first()
     if not patient:
-        raise HTTPException(status_code=404, detail="Patient not found")
+        raise HTTPException(status_code=404, detail="المريض غير موجود")
     if patient.assigned_doctor_id != doctor.id:
         raise HTTPException(status_code=403, detail="هذا المريض غير مسجل تحت إشرافك")
     user = db.query(User).filter(User.id == patient.user_id).first()
@@ -254,8 +268,11 @@ def patient_summary(
         .all()
     )
 
+    # Display keeps the true latest MRI (so the doctor sees pending ones),
+    # but risk is computed from the latest approved diagnosis only.
+    risk_diag = _latest_completed_diagnosis(patient_id, db)
     risk = compute_risk(
-        diag.classification if diag else None,
+        risk_diag.classification if risk_diag else None,
         mmse.total_score if mmse else None,
         symp.total_score if symp else None,
     )
@@ -266,7 +283,8 @@ def patient_summary(
         return {
             "id": d.id, "classification": d.classification,
             "confidence": d.confidence, "probabilities": d.probabilities,
-            "doctor_notes": d.doctor_notes, "date": d.created_at.isoformat(),
+            "doctor_notes": d.doctor_notes, "status": d.status,
+            "date": d.created_at.isoformat(),
         }
 
     def _mmse_dict(m: Optional[MMSEResult]) -> Optional[Dict]:
@@ -328,7 +346,7 @@ def patient_timeline(
     doctor = _get_doctor_record(current_user, db)
     patient = db.query(Patient).filter(Patient.id == patient_id).first()
     if not patient:
-        raise HTTPException(status_code=404, detail="Patient not found")
+        raise HTTPException(status_code=404, detail="المريض غير موجود")
     if patient.assigned_doctor_id != doctor.id:
         raise HTTPException(status_code=403, detail="هذا المريض غير مسجل تحت إشرافك")
 

@@ -39,22 +39,13 @@ export default function PatientGamesPage() {
 
   if (loading || !user) return null;
 
-  const totalSessions = stats
-    ? Object.values(stats as Record<string, any>).reduce((sum: number, g: any) => sum + (g.sessions ?? 0), 0)
-    : null;
-
-  const allAvg = stats
-    ? Object.values(stats as Record<string, any>)
-        .filter((g: any) => g.sessions > 0)
-        .map((g: any) => g.avg_score ?? 0)
-    : [];
-  const avgScore = allAvg.length > 0 ? Math.round(allAvg.reduce((a, b) => a + b, 0) / allAvg.length) : null;
-
-  const bestGameType = stats
-    ? Object.entries(stats as Record<string, any>)
-        .filter(([, g]: any) => g.sessions > 0)
-        .sort(([, a]: any, [, b]: any) => (b.avg_score ?? 0) - (a.avg_score ?? 0))[0]?.[0]
-    : null;
+  // GET /games/stats returns { total_sessions, average_score, best_scores, by_game }
+  // where by_game = { gameType: { count, best, average } }
+  const byGame: Record<string, any> = (stats?.by_game as Record<string, any>) ?? {};
+  const totalSessions = stats ? (stats.total_sessions ?? 0) : null;
+  const avgScore = stats && (stats.total_sessions ?? 0) > 0 ? Math.round(stats.average_score ?? 0) : null;
+  const bestGameType = Object.entries(byGame)
+    .sort(([, a], [, b]) => ((b as any).average ?? 0) - ((a as any).average ?? 0))[0]?.[0] ?? null;
 
   return (
     <DashboardLayout title="الألعاب المعرفية">
@@ -105,7 +96,7 @@ export default function PatientGamesPage() {
           {/* ── Games grid ── */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {GAMES.map((g, i) => {
-              const gStat = stats?.[g.type];
+              const gStat = byGame[g.type];
               return (
                 <motion.div key={g.href} {...fadeUp(0.18 + i * 0.06)}>
                   <Link
@@ -119,9 +110,9 @@ export default function PatientGamesPage() {
                     <div className="flex-1">
                       <div className="font-extrabold text-slate-900">{g.name}</div>
                       <div className="text-xs text-slate-400 mt-0.5 font-medium">{g.domain}</div>
-                      {gStat && gStat.sessions > 0 && (
+                      {gStat && gStat.count > 0 && (
                         <div className="mt-2 flex items-center gap-2 text-[11px] text-slate-500">
-                          <span className="font-bold">{gStat.sessions} جلسة</span>
+                          <span className="font-bold">{gStat.count} جلسة</span>
                           <span>·</span>
                           <span>أفضل: <span className="font-bold text-slate-700">{gStat.best ?? 0}</span></span>
                         </div>

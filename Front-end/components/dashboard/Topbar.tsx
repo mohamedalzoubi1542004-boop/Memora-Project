@@ -3,15 +3,22 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/AuthContext";
-import { MessageCircle, ChevronDown, LogOut, User, Bell } from "lucide-react";
+import { MessageCircle, ChevronDown, LogOut, User } from "lucide-react";
 
 interface TopbarProps {
   title: string;
 }
 
+// Profile pages that currently exist, keyed by role
+const PROFILE_ROUTES: Record<string, string> = {
+  patient: "/dashboard/patient/profile",
+  doctor:  "/dashboard/doctor/profile",
+};
+
 export default function Topbar({ title }: TopbarProps) {
   const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
+  const profileHref = user ? PROFILE_ROUTES[user.role] : undefined;
 
   return (
     <header
@@ -25,12 +32,6 @@ export default function Topbar({ title }: TopbarProps) {
       </div>
 
       <div className="flex items-center gap-2">
-        {/* Notification bell */}
-        <button className="relative p-2.5 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 border border-gray-100 hover:border-blue-100 transition-all duration-200">
-          <Bell size={17} strokeWidth={1.75} />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-cyan-500 border-2 border-white" />
-        </button>
-
         {/* Messages */}
         <Link
           href="/dashboard/messages"
@@ -77,13 +78,16 @@ export default function Topbar({ title }: TopbarProps) {
 
                 {/* Menu items */}
                 <div className="py-1">
-                  <button
-                    onClick={() => setOpen(false)}
-                    className="w-full text-right px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors flex items-center gap-2.5"
-                  >
-                    <User size={14} strokeWidth={1.75} className="text-slate-400" />
-                    الملف الشخصي
-                  </button>
+                  {profileHref && (
+                    <Link
+                      href={profileHref}
+                      onClick={() => setOpen(false)}
+                      className="w-full text-right px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors flex items-center gap-2.5"
+                    >
+                      <User size={14} strokeWidth={1.75} className="text-slate-400" />
+                      الملف الشخصي
+                    </Link>
+                  )}
                   <div className="border-t border-gray-50 my-1" />
                   <button
                     onClick={() => { setOpen(false); logout(); }}

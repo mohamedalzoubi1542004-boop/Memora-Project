@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, CheckCircle, RefreshCw } from "lucide-react";
+import { Heart, CheckCircle, RefreshCw, ChevronDown } from "lucide-react";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
-import { caregiverApi } from "@/lib/api";
+import { caregiverApi, familyApi } from "@/lib/api";
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 20 },
@@ -32,21 +32,38 @@ const ANSWERS = [
   { value: 2, label: "دائماً",   active: "bg-red-500 text-white border-red-500 shadow-md shadow-red-500/30",               idle: "border-gray-200 text-slate-600 hover:border-red-300 hover:bg-red-50" },
 ];
 
+const RELATION_LABELS: Record<string, string> = {
+  son: "ابن", daughter: "ابنة", father: "أب", mother: "أم",
+  brother: "أخ", sister: "أخت", spouse: "زوج/زوجة", other: "أخرى",
+};
+
 function burnoutInfo(score: number) {
-  if (score <= 6)  return { text: "منخفض", textClass: "text-emerald-600", ringGradient: "from-emerald-500 to-teal-500",  bgClass: "bg-emerald-50 border-emerald-200", desc: "أنت في حالة جيدة. استمر في الاعتناء بصحتك." };
-  if (score <= 13) return { text: "متوسط", textClass: "text-amber-600",   ringGradient: "from-amber-400 to-orange-400",  bgClass: "bg-amber-50 border-amber-200",   desc: "يُنصح بأخذ قسط من الراحة والتحدث مع متخصص." };
-  return               { text: "مرتفع", textClass: "text-red-600",     ringGradient: "from-red-500 to-rose-500",       bgClass: "bg-red-50 border-red-200",       desc: "مستوى الإجهاد مرتفع. يُرجى التواصل مع مختص نفسي." };
+  if (score <= 6)  return { text: "منخفض", textClass: "text-emerald-600", bgClass: "bg-emerald-50 border-emerald-200", desc: "أنت في حالة جيدة. استمر في الاعتناء بصحتك." };
+  if (score <= 13) return { text: "متوسط", textClass: "text-amber-600",   bgClass: "bg-amber-50 border-amber-200",   desc: "يُنصح بأخذ قسط من الراحة والتحدث مع متخصص." };
+  return               { text: "مرتفع", textClass: "text-red-600",     bgClass: "bg-red-50 border-red-200",       desc: "مستوى الإجهاد مرتفع. يُرجى التواصل مع مختص نفسي." };
 }
 
-const inputClass = "w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-slate-900 placeholder-gray-400 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/10 transition-all text-sm";
+type LinkedPatient = { patient_id: number; full_name: string; relation_type: string };
 
 export default function BurnoutPage() {
   const { user, loading } = useRequireAuth(["family"]);
-  const [patientId, setPatientId] = useState("");
-  const [answers, setAnswers]     = useState<Record<string, number>>({});
-  const [result, setResult]       = useState<any>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError]         = useState("");
+
+  const [patients, setPatients]       = useState<LinkedPatient[]>([]);
+  const [selectedId, setSelectedId]   = useState<number | null>(null);
+  const [answers, setAnswers]         = useState<Record<string, number>>({});
+  const [result, setResult]           = useState<any>(null);
+  const [submitting, setSubmitting]   = useState(false);
+  const [error, setError]             = useState("");
+
+  useEffect(() => {
+    if (!user) return;
+    familyApi.myPatients()
+      .then((list) => {
+        setPatients(list);
+        if (list.length === 1) setSelectedId(list[0].patient_id);
+      })
+      .catch(() => setPatients([]));
+  }, [user]);
 
   if (loading || !user) return null;
 
@@ -55,12 +72,12 @@ export default function BurnoutPage() {
   const progress    = (answered / QUESTIONS.length) * 100;
 
   async function handleSubmit() {
-    if (!allAnswered || !patientId) return;
+    if (!allAnswered || !selectedId) return;
     setSubmitting(true); setError("");
     try {
       const scores: Record<string, number> = {};
       QUESTIONS.forEach((_, i) => { scores[`q${i + 1}`] = answers[`q${i + 1}`] ?? 0; });
-      const res = await caregiverApi.submit({ patient_id: parseInt(patientId), scores });
+      const res = await caregiverApi.submit({ patient_id: selectedId, scores });
       setResult(res);
     } catch (e: any) { setError(e.message ?? "حدث خطأ"); }
     finally { setSubmitting(false); }
@@ -91,7 +108,7 @@ export default function BurnoutPage() {
                   const bl = burnoutInfo(result.total_score);
                   return (
                     <>
-                      <div className={`w-32 h-32 rounded-full mx-auto flex flex-col items-center justify-center border-4 ${bl.bgClass} shadow-xl`} style={{ borderImage: "unset" }}>
+                      <div className={`w-32 h-32 rounded-full mx-auto flex flex-col items-center justify-center border-4 ${bl.bgClass} shadow-xl`}>
                         <div className={`text-4xl font-black ${bl.textClass}`}>{result.total_score}</div>
                         <div className="text-xs text-slate-400 font-medium">/ 20</div>
                       </div>
@@ -122,11 +139,38 @@ export default function BurnoutPage() {
                   <p className="text-slate-400 text-sm">استبيان من 10 أسئلة لقياس مستوى الإجهاد النفسي لمقدم الرعاية.</p>
                 </motion.div>
 
-                {/* Patient ID */}
+                {/* Patient selector */}
                 <motion.div {...fadeUp(0.08)} className="bg-white border border-gray-100 rounded-2xl shadow-sm p-5">
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">رقم المريض الذي تقدم له الرعاية</label>
-                  <input type="number" value={patientId} onChange={(e) => setPatientId(e.target.value)}
-                    placeholder="مثال: 1" className={inputClass} />
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-2">المريض الذي تقدم له الرعاية</label>
+                  {patients.length === 0 ? (
+                    <p className="text-sm text-slate-400">لا يوجد مرضى مرتبطون بحسابك.</p>
+                  ) : patients.length === 1 ? (
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200">
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-500 text-white font-black text-sm shrink-0">
+                        {patients[0].full_name.charAt(0)}
+                      </div>
+                      <div>
+                        <div className="text-slate-900 font-bold text-sm">{patients[0].full_name}</div>
+                        <div className="text-xs text-emerald-600">{RELATION_LABELS[patients[0].relation_type] ?? patients[0].relation_type}</div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="relative">
+                      <select
+                        value={selectedId ?? ""}
+                        onChange={(e) => setSelectedId(Number(e.target.value))}
+                        className="w-full appearance-none pr-4 pl-10 py-3 rounded-xl border border-gray-200 bg-white text-slate-900 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/10 transition-all text-sm"
+                      >
+                        <option value="" disabled>اختر مريضاً...</option>
+                        {patients.map((p) => (
+                          <option key={p.patient_id} value={p.patient_id}>
+                            {p.full_name} — {RELATION_LABELS[p.relation_type] ?? p.relation_type}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                    </div>
+                  )}
                 </motion.div>
 
                 {/* Progress bar */}
@@ -173,11 +217,11 @@ export default function BurnoutPage() {
                 {error && <div className="text-red-600 text-sm bg-red-50 border border-red-100 rounded-xl p-3">{error}</div>}
 
                 <motion.div {...fadeUp(0.6)}>
-                  <button onClick={handleSubmit} disabled={!allAnswered || !patientId || submitting}
+                  <button onClick={handleSubmit} disabled={!allAnswered || !selectedId || submitting}
                     className="w-full py-4 rounded-2xl font-bold text-white bg-gradient-to-l from-emerald-600 to-teal-500 hover:opacity-90 shadow-lg shadow-emerald-600/30 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                     {submitting ? (
                       <><span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> جاري الحفظ...</>
-                    ) : !patientId ? "أدخل رقم المريض أولاً"
+                    ) : !selectedId ? "اختر المريض أولاً"
                     : !allAnswered ? `أكمل ${QUESTIONS.length - answered} سؤال متبقٍ`
                     : <><CheckCircle size={18} strokeWidth={2.5} /> إرسال التقييم</>}
                   </button>

@@ -8,11 +8,13 @@ class UserRegister(BaseModel):
     full_name: str
     phone: str | None = None
     role: UserRole = UserRole.PATIENT
+    remember_me: bool = False   # patient only — issues a long-lived token
 
 
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+    remember_me: bool = False   # patient only — issues a long-lived token
 
 
 class Token(BaseModel):

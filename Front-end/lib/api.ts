@@ -70,14 +70,14 @@ type AuthToken = {
 export const authApi = {
   register: (data: {
     email: string; password: string; full_name: string;
-    phone?: string; role?: string;
+    phone?: string; role?: string; remember_me?: boolean;
   }) => api.post<AuthToken>("/auth/register", data),
 
   registerDoctor: (form: FormData) =>
     api.upload<AuthToken>("/auth/register-doctor", form),
 
-  login: (email: string, password: string) =>
-    api.post<AuthToken>("/auth/login", { email, password }),
+  login: (email: string, password: string, rememberMe = false) =>
+    api.post<AuthToken>("/auth/login", { email, password, remember_me: rememberMe }),
 
   me: () => api.get<{
     id: number; email: string; full_name: string; role: string;
@@ -96,7 +96,7 @@ export const authApi = {
 
 /* ─── Verification & Password Reset ─── */
 export const verificationApi = {
-  sendOtp: (identifier: string, method: "email" | "sms", purpose: "verify" | "reset") =>
+  sendOtp: (identifier: string, method: "email", purpose: "verify" | "reset") =>
     api.post<{ message: string; expires_in: number; dev_code?: string }>(
       "/auth/send-otp", { identifier, method, purpose }
     ),
@@ -126,6 +126,7 @@ export const doctorApi = {
   update: (data: unknown) => api.put("/doctors/me", data),
   list:   ()              => api.get("/doctors"),
   get:    (id: number)    => api.get(`/doctors/${id}`),
+  cvUrl:  (doctorId: number) => `/api/doctors/${doctorId}/cv`,
 };
 
 /* ─── Appointments ─── */
@@ -145,6 +146,10 @@ export const diagnosisApi = {
   latest:      (patientId: number) => api.get(`/diagnosis/patient/${patientId}/latest`),
   updateNotes: (id: number, notes: string) =>
     api.put(`/diagnosis/${id}/notes`, { doctor_notes: notes }),
+  approve:     (id: number, notes?: string) =>
+    api.post(`/diagnosis/${id}/approve`, { doctor_notes: notes }),
+  imageUrl:    (diagnosisId: number) => `/api/diagnosis/${diagnosisId}/image`,
+  myPendingCount: () => api.get<{ pending: number }>("/diagnosis/my/pending-count"),
 };
 
 /* ─── MMSE ─── */
@@ -178,6 +183,7 @@ export const messageApi = {
   conversations: ()               => api.get("/messages/conversations"),
   with:          (partnerId: number) => api.get(`/messages/with/${partnerId}`),
   unreadCount:   ()               => api.get<{ unread_count: number }>("/messages/unread-count"),
+  contacts:      ()               => api.get<{ id: number; full_name: string; role: string; role_label: string; context: string | null }[]>("/messages/contacts"),
 };
 
 /* ─── Family ─── */
@@ -186,6 +192,7 @@ export const familyApi = {
   contacts:       (patientId: number) => api.get(`/family/contacts/patient/${patientId}`),
   deleteContact:  (id: number)        => api.delete(`/family/contacts/${id}`),
   patientSummary: (patientId: number) => api.get(`/family/patient/${patientId}/summary`),
+  myPatients:     ()                  => api.get<{ patient_id: number; full_name: string; relation_type: string }[]>("/family/my-patients"),
 };
 
 /* ─── Caregiver ─── */
@@ -198,14 +205,14 @@ export const caregiverApi = {
 /* ─── Reports ─── */
 export const reportApi = {
   generate: (patientId: number, notes = "") =>
-    api.post(`/reports/generate/${patientId}?doctor_notes=${encodeURIComponent(notes)}`, {}),
+    api.post(`/reports/generate/${patientId}`, { doctor_notes: notes }),
   list:     ()                   => api.get("/reports/list"),
   download: (filename: string)   => `/api/reports/download/${filename}`,
 };
 
 /* ─── Games ─── */
 export const gameApi = {
-  submit:  (data: { game_type: string; score: number; level_reached: number; time_seconds: number }) =>
+  submit:  (data: { game_type: string; difficulty: string; score: number; level_reached: number; time_seconds: number }) =>
     api.post("/games/submit", data),
   history: () => api.get("/games/history"),
   stats:   () => api.get("/games/stats"),
@@ -229,7 +236,7 @@ export const adminApi = {
   allDoctors:     ()           => api.get("/admin/doctors"),
   allUsers:       ()           => api.get("/admin/users"),
   approve:        (id: number) => api.post(`/admin/doctors/${id}/approve`, {}),
-  reject:         (id: number) => api.post(`/admin/doctors/${id}/reject`, {}),
+  reject:         (id: number, reason?: string) => api.post(`/admin/doctors/${id}/reject`, { reason }),
   suspend:        (id: number) => api.post(`/admin/doctors/${id}/suspend`, {}),
   unsuspend:      (id: number) => api.post(`/admin/doctors/${id}/unsuspend`, {}),
   deactivate:     (id: number) => api.post(`/admin/users/${id}/deactivate`, {}),

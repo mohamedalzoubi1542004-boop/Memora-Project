@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import List
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -13,13 +14,17 @@ from app.models.user import User, UserRole
 from app.models.patient import Patient
 from app.models.doctor import Doctor
 from app.models.diagnosis import Diagnosis
-from app.schemas.diagnosis_schema import DiagnosisOut, DiagnosisNotesUpdate
-from app.services.ai_service import ai_service
+from app.schemas.diagnosis_schema import DiagnosisOut, DiagnosisNotesUpdate, DiagnosisApprove
+from app.services.ai_service import ai_service, OODImageError
 from app.utils.deps import get_current_user
 
 router = APIRouter(prefix="/diagnosis", tags=["diagnosis"])
 
 UPLOAD_DIR = Path("./uploads/mri")
+
+# Diagnosis review states
+STATUS_PENDING   = "pending"     # AI result awaiting doctor review — hidden from the patient
+STATUS_COMPLETED = "completed"   # reviewed & approved by the doctor — visible to the patient
 
 # ── MRI file validation constants ────────────────────────────────────────────
 
@@ -112,7 +117,7 @@ async def _validate_mri_file(file: UploadFile) -> bytes:
 
 def _require_doctor(current_user: User = Depends(get_current_user)) -> User:
     if current_user.role != UserRole.DOCTOR:
-        raise HTTPException(status_code=403, detail="Doctors only")
+        raise HTTPException(status_code=403, detail="الأطباء فقط")
     return current_user
 
 
@@ -132,6 +137,7 @@ def _build_out(d: Diagnosis) -> DiagnosisOut:
         confidence=d.confidence,
         probabilities=probs,
         doctor_notes=d.doctor_notes,
+        status=d.status or STATUS_PENDING,
         created_at=d.created_at,
     )
 
@@ -145,11 +151,24 @@ async def upload_mri(
 ):
     patient = db.query(Patient).filter(Patient.id == patient_id).first()
     if not patient:
-        raise HTTPException(status_code=404, detail="Patient not found")
+        raise HTTPException(status_code=404, detail="المريض غير موجود")
 
     doctor = db.query(Doctor).filter(Doctor.user_id == current_user.id).first()
     if not doctor:
-        raise HTTPException(status_code=404, detail="Doctor profile not found")
+        raise HTTPException(status_code=404, detail="لم يُعثر على ملف الطبيب")
+
+    # Reject unapproved or suspended doctors
+    if not doctor.is_approved:
+        raise HTTPException(status_code=403, detail="حسابك لم يُوافق عليه بعد من قِبل المدير")
+    if doctor.is_suspended:
+        raise HTTPException(status_code=403, detail="حسابك موقوف — يرجى التواصل مع الإدارة")
+
+    # If patient already has a different assigned doctor, block the upload
+    if patient.assigned_doctor_id is not None and patient.assigned_doctor_id != doctor.id:
+        raise HTTPException(
+            status_code=403,
+            detail="هذا المريض مسجل تحت إشراف طبيب آخر ولا يمكنك رفع صور له",
+        )
 
     # Validate before saving to disk or calling the AI model
     image_bytes = await _validate_mri_file(file)
@@ -162,7 +181,11 @@ async def upload_mri(
     with open(dest, "wb") as f:
         f.write(image_bytes)
 
-    result = ai_service.predict(str(dest))
+    try:
+        result = ai_service.predict(str(dest))
+    except OODImageError as exc:
+        dest.unlink(missing_ok=True)
+        raise HTTPException(status_code=400, detail=str(exc))
 
     probs_str = json.dumps(result.get("probabilities", {}))
 
@@ -173,14 +196,20 @@ async def upload_mri(
         classification=result["classification"],
         confidence=result["confidence"],
         probabilities=probs_str,
+        status=STATUS_PENDING,   # awaits doctor approval before the patient can see it
     )
     db.add(diag)
 
-    # Auto-assign patient to this doctor on first MRI upload
+    # Auto-assign patient to this doctor on first MRI upload (only if unassigned)
     if patient.assigned_doctor_id is None:
         patient.assigned_doctor_id = doctor.id
 
-    db.commit()
+    try:
+        db.commit()
+    except Exception:
+        dest.unlink(missing_ok=True)  # clean up orphaned file on DB failure
+        raise HTTPException(status_code=500, detail="فشل حفظ التشخيص — يرجى المحاولة مرة أخرى")
+
     db.refresh(diag)
     return _build_out(diag)
 
@@ -191,17 +220,18 @@ def patient_history(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    if current_user.role not in (UserRole.DOCTOR, UserRole.ADMIN):
+    is_clinician = current_user.role in (UserRole.DOCTOR, UserRole.ADMIN)
+    if not is_clinician:
         patient = db.query(Patient).filter(Patient.user_id == current_user.id).first()
         if not patient or patient.id != patient_id:
-            raise HTTPException(status_code=403, detail="Access denied")
+            raise HTTPException(status_code=403, detail="غير مصرح بالوصول")
 
-    records = (
-        db.query(Diagnosis)
-        .filter(Diagnosis.patient_id == patient_id)
-        .order_by(Diagnosis.created_at.desc())
-        .all()
-    )
+    query = db.query(Diagnosis).filter(Diagnosis.patient_id == patient_id)
+    # The patient only sees diagnoses the doctor has reviewed & approved
+    if not is_clinician:
+        query = query.filter(Diagnosis.status == STATUS_COMPLETED)
+
+    records = query.order_by(Diagnosis.created_at.desc()).all()
     return [_build_out(d) for d in records]
 
 
@@ -211,15 +241,81 @@ def latest_diagnosis(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    diag = (
-        db.query(Diagnosis)
-        .filter(Diagnosis.patient_id == patient_id)
-        .order_by(Diagnosis.created_at.desc())
-        .first()
-    )
+    # Same access control as patient_history
+    is_clinician = current_user.role in (UserRole.DOCTOR, UserRole.ADMIN)
+    if not is_clinician:
+        patient = db.query(Patient).filter(Patient.user_id == current_user.id).first()
+        if not patient or patient.id != patient_id:
+            raise HTTPException(status_code=403, detail="غير مصرح بالوصول")
+
+    query = db.query(Diagnosis).filter(Diagnosis.patient_id == patient_id)
+    if not is_clinician:
+        query = query.filter(Diagnosis.status == STATUS_COMPLETED)
+
+    diag = query.order_by(Diagnosis.created_at.desc()).first()
     if not diag:
-        raise HTTPException(status_code=404, detail="No diagnosis found")
+        raise HTTPException(status_code=404, detail="لا يوجد تشخيص لهذا المريض")
     return _build_out(diag)
+
+
+@router.get("/my/pending-count")
+def my_pending_count(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """How many of the patient's own diagnoses are still awaiting doctor review."""
+    if current_user.role != UserRole.PATIENT:
+        return {"pending": 0}
+    patient = db.query(Patient).filter(Patient.user_id == current_user.id).first()
+    if not patient:
+        return {"pending": 0}
+    count = db.query(Diagnosis).filter(
+        Diagnosis.patient_id == patient.id,
+        Diagnosis.status == STATUS_PENDING,
+    ).count()
+    return {"pending": count}
+
+
+@router.get("/{diagnosis_id}/image")
+def get_mri_image(
+    diagnosis_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Return the MRI image file for a diagnosis — doctors, the patient themselves, or admin only."""
+    diag = db.query(Diagnosis).filter(Diagnosis.id == diagnosis_id).first()
+    if not diag:
+        raise HTTPException(status_code=404, detail="التشخيص غير موجود")
+
+    # Access control
+    if current_user.role == UserRole.ADMIN:
+        pass
+    elif current_user.role == UserRole.DOCTOR:
+        doctor = db.query(Doctor).filter(Doctor.user_id == current_user.id).first()
+        if not doctor or diag.doctor_id != doctor.id:
+            raise HTTPException(status_code=403, detail="غير مصرح بالوصول")
+    elif current_user.role == UserRole.PATIENT:
+        patient = db.query(Patient).filter(Patient.user_id == current_user.id).first()
+        if not patient or patient.id != diag.patient_id:
+            raise HTTPException(status_code=403, detail="غير مصرح بالوصول")
+        # The patient cannot view an MRI whose diagnosis is still pending review
+        if diag.status != STATUS_COMPLETED:
+            raise HTTPException(status_code=403, detail="هذا التشخيص قيد المراجعة من الطبيب")
+    else:
+        raise HTTPException(status_code=403, detail="غير مصرح بالوصول")
+
+    image_path = Path(diag.image_path)
+    if not image_path.exists():
+        raise HTTPException(status_code=404, detail="ملف الصورة غير موجود على الخادم")
+
+    suffix = image_path.suffix.lower()
+    media_type_map = {
+        ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
+        ".png": "image/png", ".bmp": "image/bmp",
+        ".tiff": "image/tiff", ".tif": "image/tiff",
+    }
+    media_type = media_type_map.get(suffix, "application/octet-stream")
+    return FileResponse(path=str(image_path), media_type=media_type)
 
 
 @router.put("/{diagnosis_id}/notes", response_model=DiagnosisOut)
@@ -231,8 +327,51 @@ def update_notes(
 ):
     diag = db.query(Diagnosis).filter(Diagnosis.id == diagnosis_id).first()
     if not diag:
-        raise HTTPException(status_code=404, detail="Diagnosis not found")
+        raise HTTPException(status_code=404, detail="التشخيص غير موجود")
+
+    doctor = db.query(Doctor).filter(Doctor.user_id == current_user.id).first()
+    if not doctor or diag.doctor_id != doctor.id:
+        raise HTTPException(status_code=403, detail="لا يمكنك تعديل ملاحظات تشخيص لم ترفعه أنت")
+
     diag.doctor_notes = data.doctor_notes
+    db.commit()
+    db.refresh(diag)
+    return _build_out(diag)
+
+
+@router.post("/{diagnosis_id}/approve", response_model=DiagnosisOut)
+def approve_diagnosis(
+    diagnosis_id: int,
+    data: DiagnosisApprove = DiagnosisApprove(),
+    current_user: User = Depends(_require_doctor),
+    db: Session = Depends(get_db),
+):
+    """Doctor reviews the AI result, optionally adds notes, and approves it.
+    Approval flips the diagnosis to 'completed' — only then can the patient see it."""
+    diag = db.query(Diagnosis).filter(Diagnosis.id == diagnosis_id).first()
+    if not diag:
+        raise HTTPException(status_code=404, detail="التشخيص غير موجود")
+
+    doctor = db.query(Doctor).filter(Doctor.user_id == current_user.id).first()
+    if not doctor:
+        raise HTTPException(status_code=404, detail="لم يُعثر على ملف الطبيب")
+
+    # Normally only the uploading doctor approves. But if that doctor was removed
+    # (diag.doctor_id is NULL), the patient's current assigned doctor may take over,
+    # so the diagnosis is not stranded as pending forever.
+    can_approve = diag.doctor_id == doctor.id
+    if diag.doctor_id is None:
+        patient = db.query(Patient).filter(Patient.id == diag.patient_id).first()
+        can_approve = patient is not None and patient.assigned_doctor_id == doctor.id
+    if not can_approve:
+        raise HTTPException(status_code=403, detail="لا يمكنك اعتماد تشخيص لم ترفعه أنت")
+
+    if diag.status == STATUS_COMPLETED:
+        raise HTTPException(status_code=400, detail="هذا التشخيص معتمد مسبقاً")
+
+    if data.doctor_notes is not None:
+        diag.doctor_notes = data.doctor_notes.strip()
+    diag.status = STATUS_COMPLETED
     db.commit()
     db.refresh(diag)
     return _build_out(diag)

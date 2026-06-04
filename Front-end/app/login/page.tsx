@@ -15,6 +15,7 @@ export default function LoginPage() {
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [error, setError]       = useState("");
   const [loading, setLoading]   = useState(false);
 
@@ -23,7 +24,7 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     try {
-      await login(email, password);
+      await login(email, password, rememberMe);
       const stored = JSON.parse(localStorage.getItem("memora_user") || "{}");
       router.replace(roleDashboard(stored.role ?? "patient"));
     } catch (err) {
@@ -34,7 +35,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex" dir="rtl">
+    <div className="min-h-screen bg-[#F8FAFC] flex relative" dir="rtl">
       {/* Left panel — branding */}
       <div className="hidden lg:flex lg:w-1/2 flex-col items-center justify-center p-16 bg-gradient-to-br from-blue-700 to-cyan-500 relative overflow-hidden">
         {/* Dot grid */}
@@ -55,7 +56,9 @@ export default function LoginPage() {
           className="relative z-10 text-center"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/logo.png" alt="Memora" className="h-20 w-auto object-contain mx-auto mb-8 brightness-0 invert" />
+          <Link href="/" aria-label="الصفحة الرئيسية" className="inline-block mb-8 hover:opacity-80 transition-opacity">
+            <img src="/images/logo.png" alt="Memora" className="h-20 w-auto object-contain brightness-0 invert" />
+          </Link>
           <p className="text-2xl text-blue-100 max-w-sm leading-relaxed">
             منصة طبية ذكية للكشف المبكر عن الزهايمر وإدارة رعاية المرضى
           </p>
@@ -73,7 +76,9 @@ export default function LoginPage() {
           {/* Mobile logo */}
           <div className="flex items-center mb-8 lg:hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/images/logo.png" alt="Memora" className="h-10 w-auto object-contain" />
+            <Link href="/" aria-label="الصفحة الرئيسية" className="hover:opacity-80 transition-opacity">
+              <img src="/images/logo.png" alt="Memora" className="h-10 w-auto object-contain" />
+            </Link>
           </div>
 
           <div className="mb-8">
@@ -115,6 +120,17 @@ export default function LoginPage() {
                 </button>
               </div>
             </div>
+
+            {/* Remember me */}
+            <label className="flex items-center gap-2.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-400/20 cursor-pointer"
+              />
+              <span className="text-sm text-slate-600 font-medium">تذكّرني</span>
+            </label>
 
             {error && (
               <div className="p-3 rounded-xl text-sm text-red-600 bg-red-50 border border-red-100">{error}</div>

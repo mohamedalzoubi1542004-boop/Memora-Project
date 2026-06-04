@@ -7,20 +7,20 @@ from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from jose import jwt
 from passlib.context import CryptContext
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.database import get_db
-from app.models.admin import Admin
 from app.models.doctor import Doctor
+from app.models.family_contact import FamilyContact
 from app.models.otp_token import OTPPurpose, OTPToken
 from app.models.patient import Patient
 from app.models.user import User, UserRole
 from app.schemas.user_schema import Token, UserLogin, UserOut, UserRegister
 from app.utils.deps import get_current_user
-from app.utils.file_utils import save_upload
+from app.utils.file_utils import save_upload, validate_cv_upload
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -28,6 +28,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 _OTP_EXPIRY_MINUTES = 10
 _OTP_MAX_ATTEMPTS   = 5
+_REMEMBER_ME_DAYS   = 30   # "تذكرني" — long-lived token validity for patients
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────
@@ -40,8 +41,13 @@ def _verify(plain: str, hashed: str) -> bool:
     return pwd_context.verify(plain, hashed)
 
 
-def _create_token(user_id: int) -> str:
-    expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+def _create_token(user_id: int, remember_me: bool = False) -> str:
+    """Create a JWT. With remember_me the token lives 30 days instead of the
+    short default — used only for patients who opt into "تذكرني"."""
+    if remember_me:
+        expire = datetime.utcnow() + timedelta(days=_REMEMBER_ME_DAYS)
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     return jwt.encode(
         {"sub": str(user_id), "exp": expire},
         settings.SECRET_KEY,
@@ -65,11 +71,22 @@ def _invalidate_old_otps(db: Session, identifier: str, purpose: str) -> None:
 
 @router.post("/register", response_model=Token, status_code=status.HTTP_201_CREATED)
 def register(data: UserRegister, db: Session = Depends(get_db)):
-    """Register patient, family, or admin accounts (JSON body)."""
+    """Register patient or family accounts (JSON body)."""
     if data.role == UserRole.DOCTOR:
         raise HTTPException(
             status.HTTP_400_BAD_REQUEST,
             "تسجيل الأطباء يتم عبر /auth/register-doctor",
+        )
+    # Admin accounts must never be created through public registration
+    if data.role == UserRole.ADMIN:
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            "لا يمكن إنشاء حساب مدير عبر التسجيل العام",
+        )
+    if len(data.password) < 6:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
         )
     if db.query(User).filter(User.email == data.email).first():
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "البريد الإلكتروني مستخدم مسبقاً")
@@ -86,14 +103,23 @@ def register(data: UserRegister, db: Session = Depends(get_db)):
 
     if data.role == UserRole.PATIENT:
         db.add(Patient(user_id=user.id))
-    elif data.role == UserRole.ADMIN:
-        db.add(Admin(user_id=user.id))
+    elif data.role == UserRole.FAMILY:
+        # Auto-link to any FamilyContact records that were pre-registered with this email
+        pending = db.query(FamilyContact).filter(
+            FamilyContact.email == data.email,
+            FamilyContact.user_id.is_(None),
+        ).all()
+        for contact in pending:
+            contact.user_id = user.id
 
     db.commit()
     db.refresh(user)
 
+    # "تذكرني": long-lived token — only for patients
+    remember = data.remember_me and user.role == UserRole.PATIENT
+
     return Token(
-        access_token=_create_token(user.id),
+        access_token=_create_token(user.id, remember_me=remember),
         user_id=user.id,
         full_name=user.full_name,
         role=user.role.value,
@@ -131,6 +157,9 @@ def register_doctor(
 
     cv_path: str | None = None
     if cv_file and cv_file.filename:
+        cv_bytes = cv_file.file.read()
+        validate_cv_upload(cv_file.filename, cv_bytes)
+        cv_file.file.seek(0)
         cv_path = save_upload(cv_file, subfolder="cvs")
 
     db.add(Doctor(
@@ -163,6 +192,14 @@ def login(data: UserLogin, db: Session = Depends(get_db)):
     if not user or not _verify(data.password, user.hashed_password):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "بريد إلكتروني أو كلمة مرور خاطئة")
     if not user.is_active:
+        # A rejected doctor should see why
+        if user.role == UserRole.DOCTOR:
+            doctor = db.query(Doctor).filter(Doctor.user_id == user.id).first()
+            if doctor and doctor.rejection_reason:
+                raise HTTPException(
+                    status.HTTP_403_FORBIDDEN,
+                    f"تم رفض حسابك من قِبل الإدارة — السبب: {doctor.rejection_reason}",
+                )
         raise HTTPException(status.HTTP_403_FORBIDDEN, "الحساب موقوف — تواصل مع الإدارة")
 
     is_approved: bool | None = None
@@ -170,8 +207,11 @@ def login(data: UserLogin, db: Session = Depends(get_db)):
         doctor = db.query(Doctor).filter(Doctor.user_id == user.id).first()
         is_approved = bool(doctor and doctor.is_approved)
 
+    # "تذكرني": long-lived token — only for patients (memory-impaired users)
+    remember = data.remember_me and user.role == UserRole.PATIENT
+
     return Token(
-        access_token=_create_token(user.id),
+        access_token=_create_token(user.id, remember_me=remember),
         user_id=user.id,
         full_name=user.full_name,
         role=user.role.value,
@@ -187,16 +227,21 @@ def me(current_user: User = Depends(get_current_user)):
     return current_user
 
 
+class _UpdateProfileBody(BaseModel):
+    full_name: str | None = Field(None, min_length=2, max_length=100)
+    phone: str | None = Field(None, max_length=20)
+
+
 @router.put("/me", response_model=UserOut)
 def update_profile(
-    data: dict,
+    data: _UpdateProfileBody,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    if data.get("full_name"):
-        current_user.full_name = data["full_name"]
-    if data.get("phone"):
-        current_user.phone = data["phone"]
+    if data.full_name is not None:
+        current_user.full_name = data.full_name.strip()
+    if data.phone is not None:
+        current_user.phone = data.phone.strip()
     db.commit()
     db.refresh(current_user)
     return current_user
